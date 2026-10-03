@@ -1,0 +1,286 @@
+/* =========================================================
+   CONTACT / KONTAK JELAJAH SUMATERA STYLES
+   ========================================================= */
+
+.contact-page {
+  background-color: #faf7f2;
+  color: #2a2520;
+  min-height: calc(100vh - 4.25rem - 300px);
+  padding: 2.25rem 0 5rem 0;
+}
+
+/* ================= BREADCRUMB ================= */
+.contact-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  margin-bottom: 2rem;
+}
+
+.contact-breadcrumb__link {
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.contact-breadcrumb__link:hover {
+  color: #c4542e;
+}
+
+.contact-breadcrumb__separator {
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.contact-breadcrumb__current {
+  color: #c4542e;
+  font-weight: 600;
+}
+
+/* ================= MAIN LAYOUT ================= */
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2.25rem;
+  align-items: start;
+}
+
+/* ================= FORM CARD ================= */
+.contact-form-card {
+  background: #ffffff;
+  border: 1px solid #ebe5dc;
+  border-radius: 12px;
+  padding: 2.75rem 3rem;
+  box-shadow: 0 1px 4px rgba(21, 56, 43, 0.02);
+}
+
+.contact-form-card__title {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 2.15rem;
+  font-weight: 700;
+  color: #15382b;
+  margin: 0 0 2rem 0;
+  line-height: 1.2;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.contact-form__group {
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-form__label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.55rem;
+}
+
+.contact-form__input,
+.contact-form__select,
+.contact-form__textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #faf8f5;
+  border: 1px solid #ede8de;
+  border-radius: 6px;
+  padding: 0.85rem 1rem;
+  font-size: 0.925rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1f2937;
+  transition: all 0.2s ease;
+}
+
+.contact-form__input::placeholder,
+.contact-form__textarea::placeholder {
+  color: #9ca3af;
+}
+
+.contact-form__input:focus,
+.contact-form__select:focus,
+.contact-form__textarea:focus {
+  outline: none;
+  background-color: #ffffff;
+  border-color: #c4542e;
+  box-shadow: 0 0 0 3px rgba(196, 84, 46, 0.12);
+}
+
+.contact-form__select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234b5563' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+.contact-form__textarea {
+  min-height: 145px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.contact-form__btn-submit {
+  align-self: flex-start;
+  background-color: #c4542e;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem 1.85rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(196, 84, 46, 0.2);
+}
+
+.contact-form__btn-submit:hover {
+  background-color: #a84321;
+  box-shadow: 0 6px 16px -4px rgba(196, 84, 46, 0.35);
+  transform: translateY(-1px);
+}
+
+.contact-form__btn-submit:active {
+  transform: translateY(0);
+}
+
+.contact-form__success {
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  color: #065f46;
+  font-size: 0.925rem;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ================= RIGHT SIDEBAR ================= */
+.contact-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Card: Hubungi Kami */
+.contact-info-card {
+  background-color: #0f3328;
+  border-radius: 12px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 2px 8px rgba(15, 51, 40, 0.08);
+}
+
+.contact-info-card__title {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #e5a83b;
+  margin: 0 0 1.5rem 0;
+  letter-spacing: -0.01em;
+}
+
+.contact-info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.contact-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  color: #d1ded9;
+  font-size: 0.925rem;
+  line-height: 1.5;
+}
+
+.contact-info-item__icon {
+  flex-shrink: 0;
+  color: #d1ded9;
+  margin-top: 2px;
+}
+
+.contact-info-item__link {
+  color: #d1ded9;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contact-info-item__link:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* Card: Peta Lokasi Kami */
+.contact-map-card {
+  background: #ffffff;
+  border: 1px solid #ebe5dc;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(21, 56, 43, 0.02);
+  line-height: 0;
+}
+
+.contact-map-card__img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.contact-map-card:hover .contact-map-card__img {
+  transform: scale(1.02);
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 991px) {
+  .contact-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .contact-form-card {
+    padding: 2.25rem 2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .contact-page {
+    padding: 1.5rem 0 3.5rem 0;
+  }
+
+  .contact-breadcrumb {
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-form-card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .contact-form-card__title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-info-card {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .contact-info-card__title {
+    font-size: 1.45rem;
+  }
+}

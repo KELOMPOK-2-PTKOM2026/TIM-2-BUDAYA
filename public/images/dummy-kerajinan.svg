@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGradKerajinan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#231f17" />
+      <stop offset="50%" stop-color="#2d271c" />
+      <stop offset="100%" stop-color="#18150f" />
+    </linearGradient>
+    <linearGradient id="circleGradKerajinan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4d4021" />
+      <stop offset="100%" stop-color="#2c230e" />
+    </linearGradient>
+    <pattern id="gridPatternKerajinan" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 40 M 0 0 L 40 40" fill="none" stroke="#4f4228" stroke-width="0.75" stroke-opacity="0.25" />
+      <circle cx="20" cy="20" r="1.5" fill="#e5b84c" fill-opacity="0.25" />
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bgGradKerajinan)" />
+  <rect width="800" height="500" fill="url(#gridPatternKerajinan)" />
+
+  <!-- Outer frame border with corner accents -->
+  <rect x="24" y="24" width="752" height="452" rx="16" fill="none" stroke="#5c4d2d" stroke-width="1.5" stroke-dasharray="6,4" stroke-opacity="0.6" />
+  <rect x="32" y="32" width="736" height="436" rx="12" fill="none" stroke="#e5b84c" stroke-width="1" stroke-opacity="0.2" />
+
+  <!-- Corner embellishments -->
+  <path d="M 44 60 L 44 44 L 60 44" fill="none" stroke="#e5b84c" stroke-width="2.5" />
+  <path d="M 756 60 L 756 44 L 740 44" fill="none" stroke="#e5b84c" stroke-width="2.5" />
+  <path d="M 44 440 L 44 456 L 60 456" fill="none" stroke="#e5b84c" stroke-width="2.5" />
+  <path d="M 756 440 L 756 456 L 740 456" fill="none" stroke="#e5b84c" stroke-width="2.5" />
+
+  <!-- Central Badge Circle -->
+  <circle cx="400" cy="180" r="62" fill="url(#circleGradKerajinan)" stroke="#806830" stroke-width="2" />
+  <circle cx="400" cy="180" r="68" fill="none" stroke="#e5b84c" stroke-width="1" stroke-opacity="0.4" stroke-dasharray="4,4" />
+
+  <!-- Crafts / Textile Weaving / Pusaka Heirloom Icon -->
+  <g transform="translate(400, 180)" stroke="#f5d378" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Diamond Songket / Weaving loom frame -->
+    <path d="M 0 -36 L 36 0 L 0 36 L -36 0 Z" fill="#382e16" fill-opacity="0.8" stroke-width="2" />
+    <path d="M 0 -22 L 22 0 L 0 22 L -22 0 Z" stroke="#e5b84c" stroke-dasharray="3,3" />
+    <!-- Center gemstone / pusaka motif -->
+    <circle cx="0" cy="0" r="7" fill="#f5d378" stroke="#ffffff" stroke-width="1.2" />
+    <!-- Artisan shuttle / Needle or chisel cross -->
+    <line x1="-28" y1="-28" x2="28" y2="28" stroke="#e5b84c" stroke-width="1.8" />
+    <circle cx="-28" cy="-28" r="3.5" fill="#e5b84c" />
+    <circle cx="28" cy="28" r="3.5" fill="#e5b84c" />
+    <!-- Woven horizontal threads -->
+    <line x1="-12" y1="-8" x2="12" y2="-8" stroke="#f5d378" stroke-width="1.4" />
+    <line x1="-12" y1="8" x2="12" y2="8" stroke="#f5d378" stroke-width="1.4" />
+  </g>
+
+  <!-- Tag Pill -->
+  <g transform="translate(400, 280)">
+    <rect x="-115" y="-14" width="230" height="28" rx="14" fill="#3d3218" stroke="#6e5927" stroke-width="1.2" />
+    <text x="0" y="4" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#fbe49c" letter-spacing="1.5">DOKUMENTASI KERAJINAN</text>
+  </g>
+
+  <!-- Title & Status -->
+  <text x="400" y="340" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="700" fill="#fdfcf8" letter-spacing="0.5">
+    Foto Belum Tersedia
+  </text>
+  <text x="400" y="372" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#beaf8f">
+    Gambar Dummy Sementara • Dalam Proses Kurasi Lapangan
+  </text>
+
+  <!-- Footer Branding -->
+  <line x1="320" y1="404" x2="480" y2="404" stroke="#5c4d2d" stroke-width="1" />
+  <text x="400" y="424" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="500" fill="#8f7f5a" letter-spacing="2">
+    JELAJAH SUMATERA • KRIYA &amp; PUSAKA ADAT
+  </text>
+</svg>

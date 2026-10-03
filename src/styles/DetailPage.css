@@ -1,352 +1,612 @@
+/* =========================================================================
+   DETAIL PAGE STYLES - JELAJAH SUMATERA
+   Faithfully matching the design mockup:
+   - Contained hero image banner with rounded corners
+   - Two-column layout with narrative, 4-photo gallery, and Fakta Menarik
+   - Warisan Terkait 3-column card grid
+   - Clean, elegant typography (EB Garamond + Inter)
+   ========================================================================= */
+
 .detail-page {
-  background: #faf8f4;
+  background-color: #faf8f4;
   min-height: 100vh;
+  color: #2b302d;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding-bottom: 70px;
 }
 
-/* HERO */
+/* =========================================================================
+   1. BREADCRUMBS & TOP ACTIONS BAR
+   ========================================================================= */
 
-.detail-hero {
-  position: relative;
+.detail-topbar {
+  padding: 22px 0 18px;
+}
+
+.detail-topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.detail-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+  color: #727a75;
+}
+
+.detail-breadcrumb__link {
+  color: #727a75;
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+
+.detail-breadcrumb__link:hover {
+  color: #163b2e;
+}
+
+.detail-breadcrumb__sep {
+  color: #b2b8b4;
+  font-size: 14px;
+  user-select: none;
+}
+
+.detail-breadcrumb__active {
+  color: #c4542e;
+  font-weight: 500;
+}
+
+/* Action Buttons (Share & Bookmark) */
+.detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.detail-action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #ddd7cb;
+  background-color: #ffffff;
+  color: #444c47;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.detail-action-btn:hover {
+  background-color: #f7f3ec;
+  border-color: #c4542e;
+  color: #c4542e;
+  transform: translateY(-1px);
+}
+
+.detail-action-btn--active {
+  background-color: #fdf3ef;
+  border-color: #c4542e;
+  color: #c4542e;
+}
+
+/* =========================================================================
+   2. HERO IMAGE BANNER (CONTAINED CARD)
+   ========================================================================= */
+
+.detail-hero-section {
+  margin-bottom: 34px;
+}
+
+.detail-banner-card {
+  width: 100%;
   height: 480px;
+  max-height: 480px;
+  border-radius: 14px;
   overflow: hidden;
-  color: white;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+  background-color: #1a2c24;
 }
 
-.detail-hero__image {
+.detail-banner-card__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 35%;
+  display: block;
+  transition: transform 0.6s ease;
 }
 
-.detail-hero__overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.2),
-      rgba(0, 0, 0, 0.75)
-    );
+.detail-banner-card:hover .detail-banner-card__img {
+  transform: scale(1.015);
 }
 
-.detail-hero__content {
-  position: absolute;
-  inset: 0;
+/* =========================================================================
+   3. MAIN TWO-COLUMN CONTENT
+   ========================================================================= */
+
+.detail-main-section {
+  margin-bottom: 56px;
+}
+
+.detail-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 48px;
+  align-items: start;
+}
+
+/* Left Column: Narrative & Gallery */
+.detail-content-col {
+  min-width: 0;
+}
+
+/* Tags Row */
+.detail-tags-row {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-top: 32px;
-  padding-bottom: 55px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-bottom: 14px;
 }
 
-.detail-back {
+.detail-pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  width: fit-content;
-  color: white;
-  text-decoration: none;
-  font-size: 14px;
-  transition: opacity 0.2s ease;
-}
-
-.detail-back:hover {
-  opacity: 0.75;
-}
-
-.detail-hero__text {
-  max-width: 750px;
-}
-
-.detail-category {
-  display: inline-block;
-  padding: 7px 13px;
-  margin-bottom: 15px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(8px);
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.detail-hero h1 {
-  margin: 0 0 14px;
-  font-family: 'EB Garamond', serif;
-  font-size: clamp(42px, 6vw, 72px);
-  line-height: 0.95;
-}
-
-.detail-location {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 16px;
-}
-
-/* CONTENT */
-
-.detail-content {
-  padding-top: 70px;
-  padding-bottom: 80px;
-}
-
-.detail-intro {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 60px;
-}
-
-.detail-label {
-  display: block;
-  margin-bottom: 12px;
-  color: #c4542e;
+  padding: 4.5px 13px;
+  border-radius: 9999px;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 1.5px;
+  letter-spacing: 0.3px;
+  text-transform: capitalize;
+  line-height: 1.2;
 }
 
-.detail-intro h2,
-.detail-section h2 {
-  margin: 0 0 20px;
-  color: #1c3b2e;
-  font-family: 'EB Garamond', serif;
-  font-size: 42px;
-  line-height: 1.1;
+.detail-pill--primary {
+  background-color: #c85333;
+  color: #ffffff;
 }
 
-.detail-description,
-.detail-intro p {
-  color: #555;
-  font-size: 16px;
-  line-height: 1.8;
+.detail-pill--secondary {
+  background-color: #dff0ec;
+  color: #175344;
 }
 
-.detail-intro h3 {
-  margin-top: 35px;
-  margin-bottom: 10px;
-  color: #1c3b2e;
-  font-family: 'EB Garamond', serif;
-  font-size: 28px;
+/* Title */
+.detail-title {
+  margin: 0 0 18px;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: clamp(34px, 4.2vw, 44px);
+  font-weight: 700;
+  color: #143528;
+  line-height: 1.15;
+  letter-spacing: -0.3px;
 }
 
-/* SIDEBAR */
-
-.detail-info-card {
-  padding: 25px;
-  background: white;
-  border: 1px solid #e8e2d9;
-  border-radius: 12px;
+/* Narrative */
+.detail-narrative {
+  color: #4b544f;
+  font-size: 15px;
+  line-height: 1.85;
 }
 
-.detail-info-item {
-  display: flex;
-  gap: 14px;
-  padding: 17px 0;
-  border-bottom: 1px solid #eee8df;
+.detail-narrative p {
+  margin: 0 0 16px;
 }
 
-.detail-info-item:first-child {
-  padding-top: 0;
+.detail-narrative p:last-child {
+  margin-bottom: 0;
 }
 
-.detail-info-item:last-child {
-  padding-bottom: 0;
-  border-bottom: none;
+/* Galeri Visual Tradisi */
+.detail-gallery-block {
+  margin-top: 36px;
 }
 
-.detail-info-item svg {
-  flex-shrink: 0;
-  color: #c4542e;
+.detail-gallery-title {
+  margin: 0 0 16px;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 25px;
+  font-weight: 700;
+  color: #143528;
+  letter-spacing: -0.2px;
 }
 
-.detail-info-item span {
-  display: block;
-  margin-bottom: 4px;
-  color: #888;
-  font-size: 12px;
-}
-
-.detail-info-item strong {
-  color: #1c3b2e;
-  font-size: 14px;
-}
-
-.detail-share {
-  width: 100%;
-  margin-top: 15px;
-  padding: 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  background: transparent;
-  border: 1px solid #c4542e;
-  border-radius: 8px;
-  color: #c4542e;
-  cursor: pointer;
-  font-family: inherit;
-  font-weight: 600;
-}
-
-.detail-share:hover {
-  background: #c4542e;
-  color: white;
-}
-
-/* INFORMATION */
-
-.detail-section {
-  margin-top: 90px;
-  padding-top: 60px;
-  border-top: 1px solid #e4ded5;
-}
-
-.detail-grid {
+.detail-gallery-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.detail-gallery-card {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #e5e0d7;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.detail-gallery-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease, filter 0.25s ease;
+}
+
+.detail-gallery-card:hover img {
+  transform: scale(1.06);
+  filter: brightness(1.03);
+}
+
+/* =========================================================================
+   4. SIDEBAR: FAKTA MENARIK
+   ========================================================================= */
+
+.detail-sidebar-col {
+  position: sticky;
+  top: 96px;
+}
+
+.detail-facts-card {
+  background-color: #ffffff;
+  border: 1px solid #e7e2d7;
+  border-radius: 14px;
+  padding: 26px 24px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
+}
+
+.detail-facts-title {
+  margin: 0 0 22px;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #143528;
+  letter-spacing: -0.2px;
+}
+
+.detail-facts-list {
+  display: flex;
+  flex-direction: column;
   gap: 20px;
 }
 
-.detail-grid-item {
+.detail-fact-item {
   display: flex;
-  gap: 15px;
-  padding: 22px;
-  background: white;
-  border: 1px solid #e8e2d9;
-  border-radius: 10px;
+  align-items: flex-start;
+  gap: 13px;
 }
 
-.detail-grid-item svg {
+.detail-fact-icon {
   flex-shrink: 0;
+  margin-top: 1px;
+  color: #e59a28;
+}
+
+.detail-fact-body {
+  min-width: 0;
+}
+
+.detail-fact-headline {
+  margin: 0 0 3.5px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #143528;
+  line-height: 1.3;
+}
+
+.detail-fact-caption {
+  margin: 0;
+  font-size: 12.5px;
+  color: #6a736e;
+  line-height: 1.55;
+}
+
+/* =========================================================================
+   5. WARISAN TERKAIT SECTION
+   ========================================================================= */
+
+.detail-related-section {
+  margin-top: 56px;
+  margin-bottom: 60px;
+}
+
+.detail-related-title {
+  margin: 0 0 22px;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #143528;
+  letter-spacing: -0.2px;
+}
+
+.detail-related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.detail-related-card {
+  background-color: #ffffff;
+  border: 1px solid #e7e2d7;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.detail-related-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.detail-related-card__media {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9.5;
+  overflow: hidden;
+  background-color: #eae5dc;
+}
+
+.detail-related-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.detail-related-card:hover .detail-related-card__media img {
+  transform: scale(1.05);
+}
+
+.detail-related-card__body {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.detail-related-card__tags {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 9px;
+}
+
+.tag-pill {
+  display: inline-block;
+  padding: 2.5px 9px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.tag-pill--prov {
+  background-color: #eef2f5;
+  color: #456272;
+}
+
+.tag-pill--cat {
+  background-color: #fdf3e7;
+  color: #b0691e;
+}
+
+.detail-related-card__heading {
+  margin: 0 0 6px;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.detail-related-card__heading a {
+  color: #143528;
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+
+.detail-related-card__heading a:hover {
   color: #c4542e;
 }
 
-.detail-grid-item span {
-  display: block;
-  margin-bottom: 6px;
-  color: #888;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.detail-grid-item p {
+.detail-related-card__desc {
   margin: 0;
-  color: #333;
-  line-height: 1.6;
+  font-size: 13.5px;
+  color: #6a736e;
+  line-height: 1.5;
 }
 
-/* CTA */
+/* =========================================================================
+   6. INTERACTIVE TOAST & LIGHTBOX MODAL
+   ========================================================================= */
 
-.detail-cta {
-  margin-top: 90px;
-  padding: 45px;
+.detail-toast-alert {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: #163b2e;
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  animation: slideToast 0.25s ease forwards;
+}
+
+@keyframes slideToast {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.detail-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(14, 28, 22, 0.88);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 30px;
-  background: #1c3b2e;
-  border-radius: 15px;
+  justify-content: center;
+  z-index: 10000;
+  padding: 24px;
+  backdrop-filter: blur(4px);
+  animation: fadeInModal 0.2s ease forwards;
+}
+
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.detail-lightbox-modal {
+  position: relative;
+  max-width: 900px;
+  max-height: 85vh;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+  background-color: #000;
+}
+
+.detail-lightbox-modal img {
+  width: 100%;
+  height: 100%;
+  max-height: 85vh;
+  object-fit: contain;
+  display: block;
+}
+
+.detail-lightbox-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
   color: white;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.detail-cta h2 {
-  max-width: 600px;
-  margin: 0 0 10px;
-  font-family: 'EB Garamond', serif;
-  font-size: 36px;
+.detail-lightbox-close:hover {
+  background: rgba(196, 84, 46, 0.9);
 }
 
-.detail-cta p {
-  max-width: 600px;
-  margin: 0;
-  color: rgba(255, 255, 255, 0.75);
-  line-height: 1.6;
-}
-
-.detail-cta .detail-label {
-  color: #e5a27f;
-}
-
-.detail-cta__button {
-  flex-shrink: 0;
-  padding: 13px 20px;
-  background: #c4542e;
-  border-radius: 8px;
-  color: white;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-/* NOT FOUND */
+/* =========================================================================
+   7. NOT FOUND STATE
+   ========================================================================= */
 
 .detail-not-found {
-  min-height: 60vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  padding: 80px 20px;
   text-align: center;
-  padding: 40px;
 }
 
 .detail-not-found h1 {
-  color: #1c3b2e;
   font-family: 'EB Garamond', serif;
-  font-size: 42px;
+  font-size: 64px;
+  color: #143528;
+  margin: 0 0 12px;
 }
 
 .detail-not-found p {
-  color: #777;
+  color: #6a736e;
+  font-size: 16px;
+  margin-bottom: 24px;
 }
 
 .detail-back-button {
-  margin-top: 20px;
-  padding: 12px 18px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #1c3b2e;
+  padding: 10px 20px;
+  background-color: #143528;
+  color: #ffffff;
   border-radius: 8px;
-  color: white;
   text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background-color 0.2s;
 }
 
-/* RESPONSIVE */
+.detail-back-button:hover {
+  background-color: #c4542e;
+}
 
-@media (max-width: 768px) {
-  .detail-hero {
-    height: 420px;
+/* =========================================================================
+   8. RESPONSIVE BREAKPOINTS
+   ========================================================================= */
+
+@media (max-width: 992px) {
+  .detail-banner-card {
+    height: 380px;
   }
 
-  .detail-content {
-    padding-top: 45px;
-  }
-
-  .detail-intro {
+  .detail-layout-grid {
     grid-template-columns: 1fr;
-    gap: 35px;
+    gap: 40px;
   }
 
-  .detail-intro h2,
-  .detail-section h2 {
-    font-size: 34px;
+  .detail-sidebar-col {
+    position: static;
   }
 
-  .detail-grid {
-    grid-template-columns: 1fr;
+  .detail-gallery-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 
-  .detail-cta {
+  .detail-related-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 680px) {
+  .detail-topbar__inner {
     flex-direction: column;
     align-items: flex-start;
-    padding: 30px;
   }
 
-  .detail-cta h2 {
+  .detail-banner-card {
+    height: 240px;
+    border-radius: 10px;
+  }
+
+  .detail-gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .detail-related-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-title {
     font-size: 30px;
   }
 }

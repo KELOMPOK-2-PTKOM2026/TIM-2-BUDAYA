@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142622" />
+      <stop offset="50%" stop-color="#1a3530" />
+      <stop offset="100%" stop-color="#0f1d1a" />
+    </linearGradient>
+    <linearGradient id="circleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#225349" />
+      <stop offset="100%" stop-color="#12362f" />
+    </linearGradient>
+    <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 40 M 0 0 L 40 40" fill="none" stroke="#2a5249" stroke-width="0.75" stroke-opacity="0.25" />
+      <circle cx="20" cy="20" r="1.5" fill="#c89b3c" fill-opacity="0.3" />
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bgGrad)" />
+  <rect width="800" height="500" fill="url(#gridPattern)" />
+
+  <!-- Outer frame border with corner accents -->
+  <rect x="24" y="24" width="752" height="452" rx="16" fill="none" stroke="#2c5c52" stroke-width="1.5" stroke-dasharray="6,4" stroke-opacity="0.6" />
+  <rect x="32" y="32" width="736" height="436" rx="12" fill="none" stroke="#c89b3c" stroke-width="1" stroke-opacity="0.2" />
+
+  <!-- Corner embellishments -->
+  <path d="M 44 60 L 44 44 L 60 44" fill="none" stroke="#c89b3c" stroke-width="2.5" />
+  <path d="M 756 60 L 756 44 L 740 44" fill="none" stroke="#c89b3c" stroke-width="2.5" />
+  <path d="M 44 440 L 44 456 L 60 456" fill="none" stroke="#c89b3c" stroke-width="2.5" />
+  <path d="M 756 440 L 756 456 L 740 456" fill="none" stroke="#c89b3c" stroke-width="2.5" />
+
+  <!-- Central Badge Circle -->
+  <circle cx="400" cy="180" r="62" fill="url(#circleGrad)" stroke="#3d8274" stroke-width="2" />
+  <circle cx="400" cy="180" r="68" fill="none" stroke="#c89b3c" stroke-width="1" stroke-opacity="0.4" stroke-dasharray="4,4" />
+
+  <!-- Dance / Performing Arts Icon -->
+  <g transform="translate(400, 180)" stroke="#e4c379" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Stylized Traditional Headdress / Dancer -->
+    <circle cx="0" cy="-28" r="9" />
+    <path d="M -16 -40 Q 0 -48 16 -40" stroke="#f6deb0" stroke-width="2" />
+    <path d="M 0 -48 L 0 -54" stroke="#f6deb0" stroke-width="2" />
+    <!-- Arms in graceful traditional pose -->
+    <path d="M -26 -10 C -22 -18 -10 -18 0 -14 C 10 -18 22 -18 26 -10" />
+    <path d="M -26 -10 C -34 -2 -32 10 -24 16" />
+    <path d="M 26 -10 C 34 -2 32 10 24 16" />
+    <!-- Fan / Selendang accent -->
+    <path d="M -24 16 Q -34 26 -28 34" stroke="#c89b3c" stroke-width="1.8" />
+    <path d="M 24 16 Q 34 26 28 34" stroke="#c89b3c" stroke-width="1.8" />
+    <!-- Body / Attire silhouette -->
+    <path d="M -10 -8 L -14 24 L 14 24 L 10 -8 Z" fill="#204d43" fill-opacity="0.7" />
+    <path d="M -18 24 L -24 44 L 24 44 L 18 24 Z" fill="#163c34" fill-opacity="0.8" />
+    <path d="M -24 44 L -28 52 M 24 44 L 28 52" stroke="#c89b3c" />
+  </g>
+
+  <!-- Tag Pill -->
+  <g transform="translate(400, 280)">
+    <rect x="-105" y="-14" width="210" height="28" rx="14" fill="#1d483f" stroke="#327b6c" stroke-width="1.2" />
+    <text x="0" y="4" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#a4ecd8" letter-spacing="1.5">DOKUMENTASI TARIAN</text>
+  </g>
+
+  <!-- Title & Status -->
+  <text x="400" y="340" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="700" fill="#fdfcf8" letter-spacing="0.5">
+    Foto Belum Tersedia
+  </text>
+  <text x="400" y="372" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#9bb3ac">
+    Gambar Dummy Sementara • Dalam Proses Kurasi Lapangan
+  </text>
+
+  <!-- Footer Branding -->
+  <line x1="320" y1="404" x2="480" y2="404" stroke="#2c5c52" stroke-width="1" />
+  <text x="400" y="424" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="500" fill="#678a81" letter-spacing="2">
+    JELAJAH SUMATERA • WARISAN BUDAYA
+  </text>
+</svg>
