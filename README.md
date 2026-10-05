@@ -1,70 +1,103 @@
-# Getting Started with Create React App
+# 🌴 TIM-2-BUDAYA: Jelajah Sumatera
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Jelajah Sumatera** adalah sebuah platform digital pelestarian budaya yang didedikasikan untuk mendokumentasikan, mempublikasikan, dan merayakan kekayaan tradisi dari 10 provinsi di Pulau Sumatera. 
 
-## Available Scripts
+Aplikasi ini memberdayakan masyarakat umum untuk ikut serta berkontribusi (sebagai *User*) dengan mengunggah artikel, gambar, atau data budaya lokal mereka. Seluruh kontribusi dari masyarakat akan melalui tahap validasi dan kurasi oleh *Admin* sebelum dipublikasikan secara resmi ke publik.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🏗️ Arsitektur Sistem & Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Proyek ini menggunakan arsitektur **Decoupled Monorepo**, di mana *source code* dipisahkan secara rapi ke dalam dua subsistem yang mandiri namun disimpan dalam satu repositori yang sama:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Frontend (`/frontend`)**: React 19 + Tailwind CSS (Antarmuka Pengguna & Interaksi Klien)
+- **Backend (`/backend`)**: Laravel 11 + MySQL (RESTful API, Autentikasi, & Manajemen Data)
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 📂 Struktur Folder Monorepo
 
-### `npm run build`
+Berikut adalah gambaran tingkat tinggi dari struktur direktori proyek ini:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```text
+TIM-2-BUDAYA/
+├── frontend/               # Aplikasi Klien (React)
+│   ├── public/             # File statis (favicon, index.html)
+│   ├── src/                # Source code React (Components, Pages, Services)
+│   ├── package.json        # Dependensi khusus frontend
+│   └── README.md           # Dokumentasi spesifik frontend
+│
+├── backend/                # Layanan API (Laravel)
+│   ├── app/                # Logika bisnis (Controllers, Models)
+│   ├── database/           # Migrations & Seeders
+│   ├── routes/             # Definisi Endpoint API (api.php)
+│   ├── composer.json       # Dependensi khusus backend
+│   └── README.md           # Dokumentasi spesifik backend
+│
+├── .editorconfig           # Aturan standar format kode (indentasi, spasi)
+├── .gitignore              # Mengabaikan file sampah sistem operasi & IDE
+├── package.json            # Otomatisasi root (install:all, dev)
+└── README.md               # Dokumentasi utama proyek
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 💻 Prerequisites (Persyaratan Sistem)
 
-### `npm run eject`
+Sebelum menjalankan proyek ini secara lokal, pastikan perangkat Anda telah terinstal:
+- **Node.js** (v18.x atau lebih baru) & **npm**
+- **PHP** (v8.2 atau lebih baru)
+- **Composer** (v2.x)
+- **MySQL** (v8.x atau MariaDB setara)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🚀 Cara Menjalankan Proyek (Local Development)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Proyek ini telah dikonfigurasi dengan skrip otomatisasi di level *root* untuk mempermudah *developer experience* (DX).
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Opsi 1: Menjalankan Otomatis (Rekomendasi)
+Hanya butuh dua langkah untuk menjalankan keseluruhan aplikasi:
 
-## Learn More
+1. **Install semua dependensi (React & Laravel):**
+   Dari *root* direktori, jalankan:
+   ```bash
+   npm run install:all
+   ```
+2. **Jalankan kedua server secara bersamaan:**
+   ```bash
+   npm run dev
+   ```
+   *(Server React akan berjalan di `http://localhost:3000` dan API Laravel di `http://localhost:8000`)*
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Opsi 2: Menjalankan Manual (Terminal Terpisah)
+Jika Anda ingin melihat *log* yang lebih terisolasi, gunakan dua terminal:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+**Terminal 1 (Backend):**
+```bash
+cd backend
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan serve
+```
 
-### Code Splitting
+**Terminal 2 (Frontend):**
+```bash
+cd frontend
+npm install
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+## ⚠️ Catatan Krusial Deployment (PENTING!)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Karena arsitektur kita adalah Monorepo, struktur direktori saat *deployment* ke platform *Cloud* memerlukan perhatian khusus:
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- **Deployment Frontend (Vercel / Netlify / Cloudflare Pages)**:
+  Saat Anda melakukan *import* repositori ini, Anda **WAJIB** mengatur konfigurasi **Root Directory** ke folder `frontend` (atau `/frontend`). Jika dibiarkan *default* di root utama, proses *build* akan gagal.
+  
+- **Deployment Backend (VPS / cPanel / Railway)**:
+  Pastikan *Document Root* pada server Anda diarahkan langsung menembus ke folder `backend/public`, bukan di *root* repositori.

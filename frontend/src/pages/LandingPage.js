@@ -1,13 +1,11 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  provinces,
-  features,
-  editorialPicks,
-  testimonials,
-  heroImage,
-  songketPattern,
-} from '../data/Mock';
+import api from '../lib/api';
+// Hapus `editorialPicks` dari Mock, tetap gunakan variabel mock untuk aset statis jika ada.
+import { provinces, features, testimonials, heroImage, songketPattern } from '../data/Mock';
 import '../styles/LandingPage.css';
+
+const STORAGE_URL = process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/';
 
 // Custom icons matching the 3 feature cards in the screenshot
 const featureIconMap = {
@@ -39,6 +37,31 @@ const featureIconMap = {
 };
 
 export default function LandingPage() {
+  const [featuredCultures, setFeaturedCultures] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const response = await api.get('/cultures', { params: { featured: 1, per_page: 6 } });
+        // Ambil array dari property pagination data.data
+        setFeaturedCultures(response.data.data);
+      } catch (error) {
+        console.error('Gagal memuat budaya pilihan:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFeatured();
+  }, []);
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return '/images/dummy-budaya.svg';
+    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith('/images/')) return imagePath;
+    return `${STORAGE_URL}${imagePath}`;
+  };
+
   return (
     <div className="landing-page">
       {/* ================= HERO SECTION ================= */}
@@ -146,40 +169,36 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          <div className="editorial-grid">
-            {editorialPicks.map((item) => (
-              <article className="editorial-card" key={item.id}>
-                <Link to={`/budaya/${item.slug}`} className="editorial-card__media-link">
-                  <div className="editorial-card__image-wrap">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="editorial-card__img"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = '/images/dummy-budaya.svg';
-                      }}
-                    />
+          {loading ? (
+             <div className="text-center p-10 font-bold">⏳ Memuat Sorotan Budaya...</div>
+          ) : (
+            <div className="editorial-grid">
+              {featuredCultures.map((item) => (
+                <article className="editorial-card" key={item.id}>
+                  <Link to={`/budaya/${item.slug}`} className="editorial-card__media-link">
+                    <div className="editorial-card__image-wrap">
+                      <img src={getImageUrl(item.image)} alt={item.title} className="editorial-card__img" />
+                    </div>
+                  </Link>
+
+                  <div className="editorial-card__tags">
+                    {/* Menggunakan relasi province dan category dari backend */}
+                    <span className="tag-province">{item.province?.name.toUpperCase()}</span>
+                    <span className="tag-category">{item.category?.name.toUpperCase()}</span>
                   </div>
-                </Link>
 
-                <div className="editorial-card__tags">
-                  <span className="tag-province">{item.province.toUpperCase()}</span>
-                  <span className="tag-category">{item.category.toUpperCase()}</span>
-                </div>
-
-                <h3 className="editorial-card__title">
-                  <Link to={`/budaya/${item.slug}`}>{item.title}</Link>
-                </h3>
-
-                <p className="editorial-card__desc">{item.desc}</p>
-
-                <Link to={`/budaya/${item.slug}`} className="editorial-card__cta">
-                  Pelajari Lebih Lanjut &rarr;
-                </Link>
-              </article>
-            ))}
-          </div>
+                  <h3 className="editorial-card__title">
+                    <Link to={`/budaya/${item.slug}`}>{item.title}</Link>
+                  </h3>
+                  <p className="editorial-card__desc line-clamp-3">{item.desc}</p>
+                  
+                  <Link to={`/budaya/${item.slug}`} className="editorial-card__cta">
+                    Pelajari Lebih Lanjut &rarr;
+                  </Link>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
