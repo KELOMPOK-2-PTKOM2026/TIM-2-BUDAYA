@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import api from '../lib/api';
 import '../styles/Auth.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -15,18 +18,23 @@ export default function LoginPage() {
     document.title = 'Masuk ke Akun — JelajahSumatera';
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
       alert('Mohon isi alamat email dan password Anda.');
       return;
     }
 
-    setSubmitted(true);
-    setTimeout(() => {
-      alert('Berhasil masuk! Selamat datang di JelajahSumatera.');
-      navigate('/');
-    }, 1200);
+    try {
+      const { data } = await api.post('/login', { email, password });
+      login(data.user, data.token);
+      setSubmitted(true);
+      setTimeout(() => {
+        navigate('/');
+      }, 1200);
+    } catch (error) {
+      alert(error.response?.data?.message || 'Login gagal. Periksa kembali email dan password Anda.');
+    }
   };
 
   return (

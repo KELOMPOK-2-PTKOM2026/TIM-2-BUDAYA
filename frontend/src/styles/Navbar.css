@@ -217,3 +217,51 @@
   gap: 0.75rem;
   padding-top: 1rem;
 }
+
+.navbar__profile {
+  position: relative;
+}
+
+.navbar__avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: #13332a;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.navbar__dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 110;
+  min-width: 12rem;
+  padding: 0.4rem;
+  background: #fff;
+  border: 1px solid #ede8de;
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(26, 46, 38, 0.14);
+}
+
+.navbar__dropdown a,
+.navbar__dropdown button {
+  display: block;
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border: 0;
+  border-radius: 0.45rem;
+  background: transparent;
+  color: #1a2e26;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.navbar__dropdown a:hover,
+.navbar__dropdown button:hover {
+  background: #f7f3ec;
+}

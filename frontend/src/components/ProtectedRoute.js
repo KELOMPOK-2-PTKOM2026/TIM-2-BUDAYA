@@ -1,22 +1,19 @@
+// file: d:\PTKOM\Baru\TIM-2-BUDAYA\frontend\src\components\ProtectedRoute.js
+import { useContext } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { isAuthenticated, getUser } from '../lib/auth';
+import { AuthContext } from '../context/AuthContext';
 
-/**
- * Pemakaian di App.js:
- *   <Route element={<ProtectedRoute />}>            → siapa saja yang login
- *   <Route element={<ProtectedRoute role="admin" />} → hanya admin
- *   <Route element={<ProtectedRoute role="user" />}  → hanya user biasa
- */
-export default function ProtectedRoute({ role }) {
-  if (!isAuthenticated()) {
+export default function ProtectedRoute({ children, requireAdmin = false }) {
+  const { user } = useContext(AuthContext);
+
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  const user = getUser();
-
-  if (role && user?.role !== role) {
+  if (requireAdmin && user.role !== 'admin') {
     return <Navigate to="/" replace />;
   }
 
-  return <Outlet />;
+  return children ? children : <Outlet />;
 }
+

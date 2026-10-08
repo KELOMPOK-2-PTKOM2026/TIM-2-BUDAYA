@@ -25,12 +25,13 @@ class AuthController extends Controller
             'role'     => 'user',
         ]);
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Registrasi berhasil.',
-            'user'    => $user->only('id', 'name', 'email', 'role'),
             'token'   => $token,
+            'user'    => $user->only('id', 'name', 'email', 'role'),
+            'role'    => $user->role,
         ], 201);
     }
 
@@ -51,12 +52,13 @@ class AuthController extends Controller
 
         $user->tokens()->delete();
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Login berhasil.',
-            'user'    => $user->only('id', 'name', 'email', 'role'),
             'token'   => $token,
+            'user'    => $user->only('id', 'name', 'email', 'role'),
+            'role'    => $user->role,
         ]);
     }
 
