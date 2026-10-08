@@ -12,9 +12,15 @@ class RoleMiddleware
     {
         $user = $request->user();
 
-        if (! $user || ! in_array($user->role, $roles)) {
+        if (! $user) {
             return response()->json([
-                'message' => 'Akses ditolak. Anda tidak memiliki izin untuk resource ini.',
+                'message' => 'Unauthenticated.',
+            ], 401);
+        }
+
+        if (! in_array($user->role, $roles, true)) {
+            return response()->json([
+                'message' => 'Unauthorized.',
             ], 403);
         }
 

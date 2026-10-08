@@ -1,15 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import api from '../lib/api';
 import '../styles/Auth.css';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
   const [formData, setFormData] = useState({
-    name: 'Budi Siregar',
-    email: 'budi.siregar@gmail.com',
-    password: 'budisiregar123',
-    confirmPassword: 'budisiregar123',
-    agreed: true,
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    agreed: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +32,7 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.agreed) {
       alert('Mohon setujui Syarat & Ketentuan serta Kebijakan Privasi.');
@@ -40,11 +43,23 @@ export default function RegisterPage() {
       return;
     }
 
-    setSubmitted(true);
-    setTimeout(() => {
-      alert('Pendaftaran akun berhasil! Anda akan dialihkan ke halaman Masuk.');
-      navigate('/login');
-    }, 1500);
+    try {
+      const { data } = await api.post('/register', {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        password_confirmation: formData.confirmPassword,
+      });
+      
+      login(data.user, data.token);
+      setSubmitted(true);
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
+    } catch (error) {
+      const msg = error.response?.data?.message || 'Pendaftaran gagal. Silakan coba lagi.';
+      alert(msg);
+    }
   };
 
   return (

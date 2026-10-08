@@ -1,9 +1,13 @@
-import { useState } from 'react';
+// file: d:\PTKOM\Baru\TIM-2-BUDAYA\frontend\src\components\Navbar.js
+import { useState, useContext } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import '../styles/Navbar.css';
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const { user, logout } = useContext(AuthContext);
   const location = useLocation();
   const isExploreActive = location.pathname.startsWith('/eksplorasi') || location.pathname.startsWith('/budaya');
 
@@ -67,12 +71,37 @@ export default function Navbar() {
                 <path d="m21 21-4.35-4.35" />
               </svg>
             </button>
-            <Link to="/login" className="navbar__btn-outline">
-              Masuk
-            </Link>
-            <Link to="/register" className="navbar__btn-filled">
-              Daftar
-            </Link>
+            {!user ? (
+              <>
+                <Link to="/login" className="navbar__btn-outline">
+                  Masuk
+                </Link>
+                <Link to="/register" className="navbar__btn-filled">
+                  Daftar
+                </Link>
+              </>
+            ) : (
+              <div className="navbar__profile">
+                <button
+                  type="button"
+                  className="navbar__avatar"
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  aria-expanded={profileOpen}
+                  aria-label="Buka menu profil"
+                >
+                  {(user.name || user.email || '?').charAt(0).toUpperCase()}
+                </button>
+                {profileOpen && (
+                  <div className="navbar__dropdown">
+                    <Link to="/profil" onClick={() => setProfileOpen(false)}>👤 Profil Saya</Link>
+                    {user.role === 'admin' && (
+                      <Link to="/admin" onClick={() => setProfileOpen(false)}>⚙️ Panel Admin</Link>
+                    )}
+                    <button type="button" onClick={logout}>🚪 Keluar</button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -108,12 +137,30 @@ export default function Navbar() {
               Kontak
             </NavLink>
             <div className="navbar__mobile-actions">
-              <Link to="/login" className="navbar__btn-outline" style={{ width: '100%', textAlign: 'center', textDecoration: 'none' }} onClick={closeMobile}>
-                Masuk
-              </Link>
-              <Link to="/register" className="navbar__btn-filled" style={{ width: '100%', textAlign: 'center', textDecoration: 'none' }} onClick={closeMobile}>
-                Daftar
-              </Link>
+              {!user ? (
+                <>
+                  <Link to="/login" className="navbar__btn-outline" style={{ width: '100%', textAlign: 'center', textDecoration: 'none' }} onClick={closeMobile}>
+                    Masuk
+                  </Link>
+                  <Link to="/register" className="navbar__btn-filled" style={{ width: '100%', textAlign: 'center', textDecoration: 'none' }} onClick={closeMobile}>
+                    Daftar
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link to="/profil" className="navbar__btn-outline" style={{ width: '100%', textAlign: 'center', textDecoration: 'none' }} onClick={closeMobile}>
+                    👤 Profil Saya
+                  </Link>
+                  {user.role === 'admin' && (
+                    <Link to="/admin" className="navbar__btn-filled" style={{ width: '100%', textAlign: 'center', textDecoration: 'none' }} onClick={closeMobile}>
+                      ⚙️ Panel Admin
+                    </Link>
+                  )}
+                  <button type="button" className="navbar__btn-outline" onClick={() => { closeMobile(); logout(); }}>
+                    🚪 Keluar
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}

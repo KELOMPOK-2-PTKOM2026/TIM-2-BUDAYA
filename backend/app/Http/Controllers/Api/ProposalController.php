@@ -47,13 +47,14 @@ class ProposalController extends Controller
         return response()->json($query->paginate(15));
     }
 
-    public function verify(Request $request, CultureProposal $proposal)
+    public function verify(Request $request, int $id)
     {
         $validated = $request->validate([
             'status'     => 'required|in:approved,rejected',
             'admin_note' => 'nullable|string',
         ]);
 
+        $proposal = CultureProposal::findOrFail($id);
         $proposal->update($validated);
 
         return response()->json([
