@@ -1,0 +1,251 @@
+.profile-page {
+  padding: 48px 24px;
+  max-width: 1040px;
+  margin: 0 auto;
+  font-family: inherit;
+}
+
+.profile-header {
+  margin-bottom: 32px;
+}
+
+.profile-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1c3b2e;
+  margin-bottom: 6px;
+}
+
+.profile-subtitle {
+  color: #556b62;
+  font-size: 15px;
+}
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.profile-card {
+  background: #ffffff;
+  border: 1px solid #e1e7e4;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.profile-card__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1c3b2e;
+  margin-bottom: 18px;
+  border-bottom: 1px solid #f0f4f2;
+  padding-bottom: 10px;
+}
+
+.profile-info-group {
+  margin-bottom: 14px;
+}
+
+.profile-info-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #6a8277;
+  margin-bottom: 4px;
+}
+
+.profile-info-value {
+  font-size: 15px;
+  color: #1c3b2e;
+  background: #f8faf9;
+  border: 1px solid #e2e8e5;
+  border-radius: 6px;
+  padding: 8px 12px;
+  word-break: break-all;
+}
+
+.proposal-form-section {
+  background: #ffffff;
+  border: 1px solid #e1e7e4;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  margin-bottom: 28px;
+}
+
+.proposal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2d483b;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #c9d6d0;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #1c3b2e;
+}
+
+.proposal-submit-btn {
+  align-self: flex-start;
+  background: #1c3b2e;
+  color: #ffffff;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.proposal-submit-btn:hover {
+  background: #152c23;
+}
+
+.proposal-submit-btn:disabled {
+  background: #9bb0a6;
+  cursor: not-allowed;
+}
+
+.proposals-history {
+  background: #ffffff;
+  border: 1px solid #e1e7e4;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.proposal-item {
+  border: 1px solid #eaefed;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.proposal-item:last-child {
+  margin-bottom: 0;
+}
+
+.proposal-item-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1c3b2e;
+  margin-bottom: 4px;
+}
+
+.proposal-item-meta {
+  font-size: 13px;
+  color: #647a70;
+  margin-bottom: 8px;
+}
+
+.proposal-item-desc {
+  font-size: 14px;
+  color: #3b5047;
+  line-height: 1.5;
+}
+
+.proposal-admin-note {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #fff9ea;
+  border-left: 3px solid #eab308;
+  font-size: 13px;
+  color: #713f12;
+  border-radius: 4px;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.badge-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-approved {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.alert-message {
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.alert-message.success {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.alert-message.error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}

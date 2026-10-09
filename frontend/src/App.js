@@ -6,7 +6,7 @@ import LandingPage from './pages/LandingPage';
 import ExplorePage from './pages/ExplorePage';
 import DetailPage from './pages/DetailPage';
 import AboutPage from './pages/AboutPage';
-import ContactPage from './pages/ContactPage';
+import ContributionPage from './pages/ContributionPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
@@ -28,7 +28,15 @@ function App() {
               <Route path="/eksplorasi" element={<ExplorePage />} />
               <Route path="/budaya/:slug" element={<DetailPage />} />
               <Route path="/tentang" element={<AboutPage />} />
-              <Route path="/kontak" element={<ContactPage />} />
+              <Route
+                path="/kontribusi"
+                element={
+                  <ProtectedRoute>
+                    <ContributionPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/kontak" element={<ContributionPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/masuk" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
