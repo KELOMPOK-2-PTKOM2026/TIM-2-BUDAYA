@@ -10,19 +10,28 @@ class CultureController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Culture::with(['province', 'category']);
+        $query = Culture::with(['province', 'category'])
+            ->where('status', 'published');
 
         if ($search = $request->query('search')) {
-            $query->where('title', 'like', "%{$search}%")
-                  ->orWhere('desc', 'like', "%{$search}%");
+            $query->where(function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('desc', 'like', "%{$search}%");
+            });
         }
 
-        if ($province = $request->query('province')) {
-            $query->whereHas('province', fn($q) => $q->where('slug', $province));
+        $provinceIds = $request->query('province_ids');
+        if (is_array($provinceIds) && $provinceIds !== []) {
+            $query->whereIn('province_id', $provinceIds);
+        } elseif ($province = $request->query('province')) {
+            $query->whereHas('province', fn ($query) => $query->where('slug', $province));
         }
 
-        if ($category = $request->query('category')) {
-            $query->whereHas('category', fn($q) => $q->where('slug', $category));
+        $categoryIds = $request->query('category_ids');
+        if (is_array($categoryIds) && $categoryIds !== []) {
+            $query->whereIn('category_id', $categoryIds);
+        } elseif ($category = $request->query('category')) {
+            $query->whereHas('category', fn ($query) => $query->where('slug', $category));
         }
 
         if ($request->query('featured')) {
@@ -36,10 +45,12 @@ class CultureController extends Controller
     public function show(string $slug)
     {
         $culture = Culture::with(['province', 'category'])
+            ->where('status', 'published')
             ->where('slug', $slug)
             ->firstOrFail();
 
         $related = Culture::with(['province', 'category'])
+            ->where('status', 'published')
             ->where('province_id', $culture->province_id)
             ->where('id', '!=', $culture->id)
             ->limit(4)

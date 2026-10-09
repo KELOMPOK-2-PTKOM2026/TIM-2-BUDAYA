@@ -3,20 +3,45 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Culture;
 use App\Models\CultureProposal;
+use App\Models\Province;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class ProposalController extends Controller
 {
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'         => 'required|string|max:255',
-            'province_name' => 'required|string|max:255',
-            'category_name' => 'required|string|max:255',
-            'description'   => 'required|string',
-            'image_path'    => 'nullable|string',
+            'title'             => 'required|string|max:255',
+            'province_name'     => 'required|string|max:255',
+            'category_name'     => 'required|string|max:255',
+            'description'       => 'required|string',
+            'source'            => 'nullable|string',
+            'history'           => 'nullable|string',
+            'facts'             => 'nullable|array',
+            'copyright_consent' => 'nullable|boolean',
+            'status'            => 'nullable|in:draft,pending',
+            'image_path'        => 'nullable|string',
+            'images'            => 'nullable|array|max:5',
+            'images.*'          => 'required|file|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
+
+        if ($request->hasFile('images')) {
+            $imagePaths = [];
+            foreach ($request->file('images') as $file) {
+                $imagePaths[] = Storage::disk('public')->putFile('proposals', $file);
+            }
+            $validated['images'] = $imagePaths;
+            if (empty($validated['image_path']) && ! empty($imagePaths)) {
+                $validated['image_path'] = $imagePaths[0];
+            }
+        }
 
         $proposal = $request->user()->proposals()->create($validated);
 
@@ -50,16 +75,61 @@ class ProposalController extends Controller
     public function verify(Request $request, int $id)
     {
         $validated = $request->validate([
-            'status'     => 'required|in:approved,rejected',
-            'admin_note' => 'nullable|string',
+            'status' => 'required|in:approved,rejected',
+            'admin_note' => 'required_if:status,rejected|nullable|string',
         ]);
 
-        $proposal = CultureProposal::findOrFail($id);
-        $proposal->update($validated);
+        $proposal = DB::transaction(function () use ($id, $validated) {
+            $proposal = CultureProposal::lockForUpdate()->findOrFail($id);
+
+            if ($proposal->status !== 'pending') {
+                throw ValidationException::withMessages([
+                    'status' => ['Hanya usulan berstatus menunggu yang dapat diverifikasi.'],
+                ]);
+            }
+
+            if ($validated['status'] === 'approved') {
+                $province = Province::where('name', $proposal->province_name)->first();
+                $category = Category::where('name', $proposal->category_name)->first();
+
+                if (! $province || ! $category) {
+                    throw ValidationException::withMessages([
+                        'proposal' => ['Provinsi atau kategori usulan tidak ditemukan.'],
+                    ]);
+                }
+
+                $slug = Str::slug($proposal->title);
+                $baseSlug = $slug;
+                $suffix = 2;
+
+                while (Culture::where('slug', $slug)->exists()) {
+                    $slug = "{$baseSlug}-{$suffix}";
+                    $suffix++;
+                }
+
+                Culture::create([
+                    'province_id' => $province->id,
+                    'category_id' => $category->id,
+                    'title' => $proposal->title,
+                    'slug' => $slug,
+                    'image' => $proposal->image_path,
+                    'images' => $proposal->images ?? ($proposal->image_path ? [$proposal->image_path] : null),
+                    'desc' => $proposal->description,
+                    'source' => $proposal->source,
+                    'history' => $proposal->history,
+                    'facts' => $proposal->facts,
+                    'status' => 'published',
+                ]);
+            }
+
+            $proposal->update($validated);
+
+            return $proposal;
+        });
 
         return response()->json([
             'message' => "Usulan berhasil di-{$validated['status']}.",
-            'data'    => $proposal->load('user'),
+            'data' => $proposal->load('user'),
         ]);
     }
 }

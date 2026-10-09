@@ -1,15 +1,46 @@
 // file: d:\PTKOM\Baru\TIM-2-BUDAYA\frontend\src\components\Navbar.js
-import { useState, useContext } from 'react';
+import { useState, useContext, useRef, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import '../styles/Navbar.css';
+
+const navItems = [
+  { name: 'Beranda', path: '/' },
+  { name: 'Eksplorasi', path: '/eksplorasi' },
+  { name: 'Tentang', path: '/tentang' },
+  { name: 'Kontribusi', path: '/kontribusi' },
+];
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const { user, logout } = useContext(AuthContext);
-  const location = useLocation();
-  const isExploreActive = location.pathname.startsWith('/eksplorasi') || location.pathname.startsWith('/budaya');
+  const { pathname } = useLocation();
+  
+  const navRefs = useRef([]);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+
+  useEffect(() => {
+    const updateIndicator = () => {
+      const activeIndex = navItems.findIndex(item => 
+        item.path === '/' ? pathname === '/' : pathname.startsWith(item.path)
+      );
+      
+      if (activeIndex !== -1 && navRefs.current[activeIndex]) {
+        const el = navRefs.current[activeIndex];
+        setIndicatorStyle({
+          left: el.offsetLeft,
+          width: el.offsetWidth
+        });
+      } else {
+        setIndicatorStyle({ left: 0, width: 0 });
+      }
+    };
+
+    updateIndicator();
+    window.addEventListener('resize', updateIndicator);
+    return () => window.removeEventListener('resize', updateIndicator);
+  }, [pathname]);
 
   const toggleMobile = () => setMobileOpen(!mobileOpen);
   const closeMobile = () => setMobileOpen(false);
@@ -34,43 +65,38 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav Links */}
-          <nav className="navbar__links">
-            <NavLink
-              to="/"
-              end
-              className={({ isActive }) => `navbar__link${isActive ? ' navbar__link--active' : ''}`}
-            >
-              Beranda
-            </NavLink>
-            <NavLink
-              to="/eksplorasi"
-              className={() => `navbar__link${isExploreActive ? ' navbar__link--active' : ''}`}
-            >
-              Eksplorasi
-            </NavLink>
+          <nav
+            className="navbar__links relative h-fit items-center gap-9 py-0"
+            style={{ position: 'relative' }}
+          >
+            {navItems.map((item, index) => {
+              const isActive = item.path === '/' ? pathname === '/' : pathname.startsWith(item.path);
 
-            <NavLink
-              to="/tentang"
-              className={({ isActive }) => `navbar__link${isActive ? ' navbar__link--active' : ''}`}
-            >
-              Tentang
-            </NavLink>
-            <NavLink
-              to="/kontak"
-              className={({ isActive }) => `navbar__link${isActive ? ' navbar__link--active' : ''}`}
-            >
-              Kontak
-            </NavLink>
+              return (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  end={item.path === '/'}
+                  ref={el => { navRefs.current[index] = el; }}
+                  className="navbar__link py-1 text-sm font-medium transition-colors"
+                  style={{ color: isActive ? '#C4542E' : undefined }}
+                >
+                  <span className="leading-none">{item.name}</span>
+                </NavLink>
+              );
+            })}
+            <div
+              aria-hidden="true"
+              className="navbar-indicator"
+              style={{
+                left: `${indicatorStyle.left}px`,
+                width: `${indicatorStyle.width}px`,
+              }}
+            />
           </nav>
 
           {/* Desktop Actions */}
           <div className="navbar__actions">
-            <button className="navbar__search-btn" aria-label="Cari Kebudayaan">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
-            </button>
             {!user ? (
               <>
                 <Link to="/login" className="navbar__btn-outline">
@@ -124,18 +150,17 @@ export default function Navbar() {
         {/* Mobile Dropdown */}
         {mobileOpen && (
           <div className="navbar__mobile">
-            <NavLink to="/" end className="navbar__mobile-link" onClick={closeMobile}>
-              Beranda
-            </NavLink>
-            <NavLink to="/eksplorasi" className="navbar__mobile-link" onClick={closeMobile}>
-              Eksplorasi
-            </NavLink>
-            <NavLink to="/tentang" className="navbar__mobile-link" onClick={closeMobile}>
-              Tentang
-            </NavLink>
-            <NavLink to="/kontak" className="navbar__mobile-link" onClick={closeMobile}>
-              Kontak
-            </NavLink>
+            {navItems.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                end={item.path === '/'}
+                className="navbar__mobile-link"
+                onClick={closeMobile}
+              >
+                {item.name}
+              </NavLink>
+            ))}
             <div className="navbar__mobile-actions">
               {!user ? (
                 <>

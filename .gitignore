@@ -39,6 +39,8 @@ dist/
 /backend/public/build/
 /backend/public/hot
 /backend/public/storage
+/backend/storage/framework/
+/backend/storage/logs/*.log
 /backend/storage/*.key
 /backend/.env
 /backend/.env.backup
@@ -47,3 +49,11 @@ dist/
 /backend/Homestead.yaml
 /backend/auth.json
 /backend/.php_cs.cache
+
+# ==============================
+# Generated frontend files
+# ==============================
+/frontend/build/
+/frontend/coverage/
+/frontend/.cache/
+/frontend/.eslintcache

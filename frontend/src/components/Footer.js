@@ -70,10 +70,10 @@ export default function Footer() {
             <div className="footer__nav-col">
               <h3 className="footer__heading">KOMUNITAS</h3>
               <ul className="footer__list">
-                <li><Link to="/eksplorasi">Jadi Kontributor</Link></li>
+                <li><Link to="/kontribusi">Jadi Kontributor</Link></li>
                 <li><Link to="/eksplorasi">Verifikasi Ahli</Link></li>
                 <li><Link to="/eksplorasi">Forum Diskusi</Link></li>
-                <li><Link to="/eksplorasi">Pengajuan Budaya</Link></li>
+                <li><Link to="/kontribusi">Pengajuan Budaya</Link></li>
               </ul>
             </div>
 

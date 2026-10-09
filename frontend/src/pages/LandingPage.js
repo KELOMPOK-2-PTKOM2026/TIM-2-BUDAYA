@@ -240,7 +240,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="cta-banner__action">
-              <Link to="/eksplorasi" className="cta-banner__btn">
+              <Link to="/kontribusi" className="cta-banner__btn">
                 Ajukan Sekarang
               </Link>
             </div>

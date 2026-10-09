@@ -8,11 +8,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Culture extends Model
 {
     protected $fillable = [
-        'province_id', 'category_id', 'title', 'slug', 'image', 'desc', 'featured'
+        'province_id', 'category_id', 'title', 'slug', 'image', 'desc', 'featured',
+        'status', 'source', 'history', 'facts', 'images',
     ];
 
     protected $casts = [
         'featured' => 'boolean',
+        'facts' => 'array',
+        'images' => 'array',
     ];
 
     public function province(): BelongsTo
