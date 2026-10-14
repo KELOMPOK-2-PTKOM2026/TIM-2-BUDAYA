@@ -9,6 +9,7 @@ class DatabaseSeeder extends Seeder {
             ProvinceSeeder::class,
             CategorySeeder::class,
             CultureSeeder::class,
+            CsvCultureSeeder::class,
         ]);
     }
 }

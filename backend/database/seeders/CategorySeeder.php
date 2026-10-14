@@ -17,6 +17,9 @@ class CategorySeeder extends Seeder
             ['name' => 'Kerajinan', 'slug' => 'kerajinan'],
             ['name' => 'Pakaian Adat', 'slug' => 'pakaian-adat'],
             ['name' => 'Seni Pertunjukan', 'slug' => 'seni-pertunjukan'],
+            ['name' => 'Adat dan Tradisi', 'slug' => 'adat-dan-tradisi'],
+            ['name' => 'Bahasa Dan Sastra', 'slug' => 'bahasa-dan-sastra'],
+            ['name' => 'Cerita Atau Legenda', 'slug' => 'cerita-atau-legenda'],
         ];
 
         foreach ($data as $item) {

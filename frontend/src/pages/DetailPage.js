@@ -65,7 +65,67 @@ export default function DetailPage() {
     return `${STORAGE_URL}${imagePath}`;
   };
 
-  if (loading) return <div className="text-center p-20 font-bold text-xl">⏳ Memuat Detail Budaya...</div>;
+  if (loading) {
+    return (
+      <div className="detail-page" aria-busy="true" aria-label="Memuat detail budaya">
+        <div className="detail-topbar">
+          <div className="container-wide">
+            <div className="detail-topbar__inner">
+              <div className="skeleton" style={{ width: '220px', height: '18px' }} />
+              <div className="detail-actions">
+                <div className="skeleton" style={{ width: '36px', height: '36px', borderRadius: '50%' }} />
+                <div className="skeleton" style={{ width: '36px', height: '36px', borderRadius: '50%' }} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <section className="detail-hero-section">
+          <div className="container-wide">
+            <div className="detail-banner-card skeleton" />
+          </div>
+        </section>
+
+        <section className="detail-main-section">
+          <div className="container-wide">
+            <div className="detail-layout-grid">
+              <div className="detail-content-col">
+                <div className="detail-tags-row">
+                  <div className="skeleton skeleton-tag" style={{ width: '80px', height: '24px', borderRadius: '9999px' }} />
+                  <div className="skeleton skeleton-tag" style={{ width: '90px', height: '24px', borderRadius: '9999px' }} />
+                </div>
+                <div className="skeleton skeleton-text" style={{ width: '60%', height: '36px', marginBottom: '24px' }} />
+                <div className="skeleton skeleton-text" style={{ height: '16px', marginBottom: '12px' }} />
+                <div className="skeleton skeleton-text" style={{ height: '16px', marginBottom: '12px' }} />
+                <div className="skeleton skeleton-text" style={{ height: '16px', marginBottom: '12px', width: '85%' }} />
+                <div className="skeleton skeleton-text" style={{ height: '16px', marginBottom: '12px', width: '70%' }} />
+
+                <div className="detail-gallery-block" style={{ marginTop: '40px' }}>
+                  <div className="skeleton skeleton-text" style={{ width: '180px', height: '22px', marginBottom: '16px' }} />
+                  <div className="detail-gallery-grid">
+                    <div className="detail-gallery-card skeleton" style={{ height: '140px' }} />
+                    <div className="detail-gallery-card skeleton" style={{ height: '140px' }} />
+                    <div className="detail-gallery-card skeleton" style={{ height: '140px' }} />
+                  </div>
+                </div>
+              </div>
+
+              <aside className="detail-sidebar-col">
+                <div className="detail-facts-card">
+                  <div className="skeleton skeleton-text" style={{ width: '120px', height: '20px', marginBottom: '20px' }} />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div className="skeleton" style={{ height: '48px' }} />
+                    <div className="skeleton" style={{ height: '48px' }} />
+                    <div className="skeleton" style={{ height: '48px' }} />
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   if (error === 'NotFound' || (!culture && !loading)) {
     return (

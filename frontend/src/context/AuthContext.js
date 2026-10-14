@@ -1,5 +1,5 @@
 // file: d:\PTKOM\Baru\TIM-2-BUDAYA\frontend\src\context\AuthContext.js
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const AuthContext = createContext(null);
@@ -11,6 +11,16 @@ export function AuthProvider({ children }) {
     return savedUser ? JSON.parse(savedUser) : null;
   });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      setUser(null);
+      setToken(null);
+    };
+
+    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
+  }, []);
 
   const login = (dataUser, authToken) => {
     setUser(dataUser);

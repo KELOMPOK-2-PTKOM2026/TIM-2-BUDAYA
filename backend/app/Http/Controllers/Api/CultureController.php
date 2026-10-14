@@ -14,8 +14,8 @@ class CultureController extends Controller
             ->where('status', 'published');
 
         if ($search = $request->query('search')) {
-            $query->where(function ($query) use ($search) {
-                $query->where('title', 'like', "%{$search}%")
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
                     ->orWhere('desc', 'like', "%{$search}%");
             });
         }
@@ -51,8 +51,11 @@ class CultureController extends Controller
 
         $related = Culture::with(['province', 'category'])
             ->where('status', 'published')
-            ->where('province_id', $culture->province_id)
             ->where('id', '!=', $culture->id)
+            ->where(function ($q) use ($culture) {
+                $q->where('category_id', $culture->category_id)
+                    ->orWhere('province_id', $culture->province_id);
+            })
             ->limit(4)
             ->get();
 

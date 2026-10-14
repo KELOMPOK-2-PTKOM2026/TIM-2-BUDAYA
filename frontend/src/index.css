@@ -11,3 +11,48 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* ================= SKELETON LOADING ANIMATION ================= */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #ece6da 25%, #f7f4ed 50%, #ece6da 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.skeleton-card {
+  pointer-events: none;
+  user-select: none;
+}
+
+.skeleton-text {
+  height: 14px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+.skeleton-text--title {
+  height: 22px;
+  width: 75%;
+  margin-bottom: 12px;
+}
+
+.skeleton-text--short {
+  width: 55%;
+}
+
+.skeleton-tag {
+  display: inline-block;
+  width: 65px;
+  height: 18px;
+  border-radius: 4px;
+}
