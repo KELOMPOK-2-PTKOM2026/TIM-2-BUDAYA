@@ -1,0 +1,266 @@
+/* =========================================================
+   ALERT MODAL (JELAJAH SUMATERA - EDITORIAL COMPONENT)
+   Sesuai DESIGN_CONTEXT.md
+   ========================================================= */
+
+.alert-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background-color: rgba(13, 36, 30, 0.58);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  animation: alertModalFadeIn 0.22s ease-out forwards;
+}
+
+.alert-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  background-color: #ffffff;
+  border: 1px solid #ebe4d5;
+  border-radius: 18px;
+  padding: 2.25rem 2rem 1.85rem;
+  box-shadow: 
+    0 24px 48px -12px rgba(13, 36, 30, 0.22),
+    0 4px 16px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+  text-align: center;
+  animation: alertModalSlideUp 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Subtle top decorative hairline */
+.alert-modal-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 24px;
+  right: 24px;
+  height: 3px;
+  border-radius: 0 0 4px 4px;
+}
+
+.alert-modal-card--warning::before {
+  background: linear-gradient(90deg, #df9e38, #C4542E);
+}
+
+.alert-modal-card--error::before {
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
+}
+
+.alert-modal-card--success::before {
+  background: linear-gradient(90deg, #16a34a, #15382b);
+}
+
+.alert-modal-card--info::before {
+  background: linear-gradient(90deg, #1C3B2E, #2f5e4c);
+}
+
+/* Tombol Tutup Silang */
+.alert-modal-close {
+  position: absolute;
+  top: 1.15rem;
+  right: 1.15rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #8c8479;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.alert-modal-close:hover {
+  background-color: #f7f3ec;
+  color: #1C3B2E;
+}
+
+/* Header */
+.alert-modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0.9rem;
+}
+
+.alert-modal-icon-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.85rem;
+  transition: transform 0.2s ease;
+}
+
+.alert-modal-icon-badge--warning {
+  background-color: #fdf1ea;
+  border: 1px solid #f8dcd0;
+  color: #C4542E;
+}
+
+.alert-modal-icon-badge--error {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+}
+
+.alert-modal-icon-badge--success {
+  background-color: #eaf6ee;
+  border: 1px solid #d2edd9;
+  color: #16a34a;
+}
+
+.alert-modal-icon-badge--info {
+  background-color: #eaf3ee;
+  border: 1px solid #d4e7dc;
+  color: #1C3B2E;
+}
+
+.alert-modal-eyebrow {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #C4542E;
+  margin-bottom: 0.35rem;
+}
+
+.alert-modal-title {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #1C3B2E;
+  margin: 0;
+  line-height: 1.25;
+}
+
+/* Body / Text */
+.alert-modal-body {
+  margin-bottom: 1.75rem;
+}
+
+.alert-modal-text {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.935rem;
+  line-height: 1.6;
+  color: #4b453e;
+  margin: 0;
+}
+
+/* Actions */
+.alert-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.alert-modal-btn-primary {
+  flex: 1;
+  background-color: #C4542E;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1.4rem;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.925rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(196, 84, 46, 0.22);
+}
+
+.alert-modal-btn-primary:hover {
+  background-color: #a84321;
+  box-shadow: 0 8px 20px -4px rgba(196, 84, 46, 0.45);
+  transform: translateY(-1px);
+}
+
+.alert-modal-btn-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(196, 84, 46, 0.25);
+}
+
+.alert-modal-btn-primary:active {
+  transform: translateY(0);
+}
+
+.alert-modal-btn-primary--error {
+  background-color: #dc2626;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.22);
+}
+
+.alert-modal-btn-primary--error:hover {
+  background-color: #b91c1c;
+  box-shadow: 0 8px 20px -4px rgba(220, 38, 38, 0.45);
+}
+
+.alert-modal-btn-secondary {
+  flex: 1;
+  background-color: #faf7f2;
+  color: #4b453e;
+  border: 1px solid #ebe4d5;
+  border-radius: 8px;
+  padding: 0.8rem 1.2rem;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.925rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.alert-modal-btn-secondary:hover {
+  background-color: #ede8dc;
+  color: #1C3B2E;
+}
+
+/* Keyframes */
+@keyframes alertModalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes alertModalSlideUp {
+  from {
+    opacity: 0;
+    transform: scale(0.93) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Mobile Adjustments */
+@media (max-width: 480px) {
+  .alert-modal-card {
+    padding: 2rem 1.35rem 1.6rem;
+    border-radius: 16px;
+  }
+
+  .alert-modal-title {
+    font-size: 1.45rem;
+  }
+
+  .alert-modal-text {
+    font-size: 0.885rem;
+  }
+
+  .alert-modal-actions {
+    flex-direction: column;
+  }
+}

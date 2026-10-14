@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import AlertModal from '../components/AlertModal';
 import '../styles/ContactPage.css';
 
 export default function ContactPage() {
@@ -10,6 +11,29 @@ export default function ContactPage() {
     message: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    type: 'warning',
+    title: '',
+    eyebrow: '',
+    message: '',
+    confirmText: 'Saya Mengerti',
+  });
+
+  const showAlert = (config) => {
+    setModalConfig({
+      isOpen: true,
+      type: config.type || 'warning',
+      title: config.title || 'Perhatian',
+      eyebrow: config.eyebrow || 'Perhatian',
+      message: config.message,
+      confirmText: config.confirmText || 'Saya Mengerti',
+    });
+  };
+
+  const closeModal = () => {
+    setModalConfig((prev) => ({ ...prev, isOpen: false }));
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -24,7 +48,13 @@ export default function ContactPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
-      alert('Mohon lengkapi seluruh formulir sebelum mengirim.');
+      showAlert({
+        type: 'warning',
+        eyebrow: 'Kelengkapan Formulir',
+        title: 'Formulir Belum Lengkap',
+        message: 'Mohon lengkapi seluruh formulir (nama, email, dan pesan) sebelum mengirim masukan Anda.',
+        confirmText: 'Lengkapi Data',
+      });
       return;
     }
 
@@ -209,6 +239,17 @@ export default function ContactPage() {
           </aside>
         </div>
       </div>
+
+      {/* Editorial Custom Alert Modal */}
+      <AlertModal
+        isOpen={modalConfig.isOpen}
+        onClose={closeModal}
+        type={modalConfig.type}
+        title={modalConfig.title}
+        eyebrow={modalConfig.eyebrow}
+        message={modalConfig.message}
+        confirmText={modalConfig.confirmText}
+      />
     </div>
   );
 }
