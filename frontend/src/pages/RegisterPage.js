@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import AlertModal from '../components/AlertModal';
 import api from '../lib/api';
 import '../styles/Auth.css';
 
@@ -18,6 +19,29 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    type: 'warning',
+    title: '',
+    eyebrow: '',
+    message: '',
+    confirmText: 'Saya Mengerti',
+  });
+
+  const showAlert = (config) => {
+    setModalConfig({
+      isOpen: true,
+      type: config.type || 'warning',
+      title: config.title || 'Persetujuan Diperlukan',
+      eyebrow: config.eyebrow || 'Perhatian',
+      message: config.message,
+      confirmText: config.confirmText || 'Saya Mengerti',
+    });
+  };
+
+  const closeModal = () => {
+    setModalConfig((prev) => ({ ...prev, isOpen: false }));
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -35,11 +59,23 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.agreed) {
-      alert('Mohon setujui Syarat & Ketentuan serta Kebijakan Privasi.');
+      showAlert({
+        type: 'warning',
+        eyebrow: 'Persetujuan Diperlukan',
+        title: 'Syarat & Ketentuan Belum Disetujui',
+        message: 'Mohon setujui Syarat & Ketentuan serta Kebijakan Privasi dengan mencentang kotak persetujuan sebelum melanjutkan pendaftaran.',
+        confirmText: 'Saya Mengerti',
+      });
       return;
     }
     if (formData.password !== formData.confirmPassword) {
-      alert('Konfirmasi password tidak cocok.');
+      showAlert({
+        type: 'error',
+        eyebrow: 'Verifikasi Password',
+        title: 'Konfirmasi Password Tidak Cocok',
+        message: 'Password dan konfirmasi password tidak cocok. Silakan pastikan kedua kolom password terisi sama persis.',
+        confirmText: 'Periksa Kembali',
+      });
       return;
     }
 
@@ -58,7 +94,13 @@ export default function RegisterPage() {
       }, 1500);
     } catch (error) {
       const msg = error.response?.data?.message || 'Pendaftaran gagal. Silakan coba lagi.';
-      alert(msg);
+      showAlert({
+        type: 'error',
+        eyebrow: 'Pendaftaran Akun',
+        title: 'Pendaftaran Gagal Diproses',
+        message: msg,
+        confirmText: 'Tutup',
+      });
     }
   };
 
@@ -238,6 +280,17 @@ export default function RegisterPage() {
           </Link>
         </div>
       </div>
+
+      {/* Editorial Custom Alert Modal */}
+      <AlertModal
+        isOpen={modalConfig.isOpen}
+        onClose={closeModal}
+        type={modalConfig.type}
+        title={modalConfig.title}
+        eyebrow={modalConfig.eyebrow}
+        message={modalConfig.message}
+        confirmText={modalConfig.confirmText}
+      />
     </div>
   );
 }

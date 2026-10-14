@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import AlertModal from '../components/AlertModal';
 import api from '../lib/api';
 import '../styles/Auth.css';
 
@@ -12,6 +13,29 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    type: 'warning',
+    title: '',
+    eyebrow: '',
+    message: '',
+    confirmText: 'Saya Mengerti',
+  });
+
+  const showAlert = (config) => {
+    setModalConfig({
+      isOpen: true,
+      type: config.type || 'warning',
+      title: config.title || 'Perhatian',
+      eyebrow: config.eyebrow || 'Perhatian',
+      message: config.message,
+      confirmText: config.confirmText || 'Saya Mengerti',
+    });
+  };
+
+  const closeModal = () => {
+    setModalConfig((prev) => ({ ...prev, isOpen: false }));
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -21,7 +45,13 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
-      alert('Mohon isi alamat email dan password Anda.');
+      showAlert({
+        type: 'warning',
+        eyebrow: 'Kelengkapan Data',
+        title: 'Formulir Belum Lengkap',
+        message: 'Mohon isi alamat email dan password Anda untuk masuk ke akun.',
+        confirmText: 'Lengkapi Data',
+      });
       return;
     }
 
@@ -33,7 +63,13 @@ export default function LoginPage() {
         navigate('/');
       }, 1200);
     } catch (error) {
-      alert(error.response?.data?.message || 'Login gagal. Periksa kembali email dan password Anda.');
+      showAlert({
+        type: 'error',
+        eyebrow: 'Autentikasi Gagal',
+        title: 'Gagal Masuk Akun',
+        message: error.response?.data?.message || 'Login gagal. Periksa kembali alamat email dan password Anda.',
+        confirmText: 'Coba Lagi',
+      });
     }
   };
 
@@ -150,6 +186,17 @@ export default function LoginPage() {
           </Link>
         </div>
       </div>
+
+      {/* Editorial Custom Alert Modal */}
+      <AlertModal
+        isOpen={modalConfig.isOpen}
+        onClose={closeModal}
+        type={modalConfig.type}
+        title={modalConfig.title}
+        eyebrow={modalConfig.eyebrow}
+        message={modalConfig.message}
+        confirmText={modalConfig.confirmText}
+      />
     </div>
   );
 }

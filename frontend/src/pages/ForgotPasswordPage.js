@@ -1,10 +1,34 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import AlertModal from '../components/AlertModal';
 import '../styles/Auth.css';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    type: 'warning',
+    title: '',
+    eyebrow: '',
+    message: '',
+    confirmText: 'Saya Mengerti',
+  });
+
+  const showAlert = (config) => {
+    setModalConfig({
+      isOpen: true,
+      type: config.type || 'warning',
+      title: config.title || 'Perhatian',
+      eyebrow: config.eyebrow || 'Perhatian',
+      message: config.message,
+      confirmText: config.confirmText || 'Saya Mengerti',
+    });
+  };
+
+  const closeModal = () => {
+    setModalConfig((prev) => ({ ...prev, isOpen: false }));
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -14,7 +38,13 @@ export default function ForgotPasswordPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email) {
-      alert('Mohon masukkan alamat email terdaftar Anda.');
+      showAlert({
+        type: 'warning',
+        eyebrow: 'Data Diperlukan',
+        title: 'Alamat Email Kosong',
+        message: 'Mohon masukkan alamat email yang terdaftar untuk menerima tautan pemulihan password.',
+        confirmText: 'Isi Email',
+      });
       return;
     }
 
@@ -82,6 +112,17 @@ export default function ForgotPasswordPage() {
           </Link>
         </div>
       </div>
+
+      {/* Editorial Custom Alert Modal */}
+      <AlertModal
+        isOpen={modalConfig.isOpen}
+        onClose={closeModal}
+        type={modalConfig.type}
+        title={modalConfig.title}
+        eyebrow={modalConfig.eyebrow}
+        message={modalConfig.message}
+        confirmText={modalConfig.confirmText}
+      />
     </div>
   );
 }
