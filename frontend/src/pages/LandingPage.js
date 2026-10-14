@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../lib/api';
 // Hapus `editorialPicks` dari Mock, tetap gunakan variabel mock untuk aset statis jika ada.
-import { provinces, features, testimonials, heroImage, songketPattern } from '../data/Mock';
+import { provinces, features, heroImage, songketPattern } from '../data/Mock';
 import '../styles/LandingPage.css';
 
 const STORAGE_URL = process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/';
@@ -170,7 +170,21 @@ export default function LandingPage() {
           </div>
 
           {loading ? (
-             <div className="text-center p-10 font-bold">⏳ Memuat Sorotan Budaya...</div>
+            <div className="editorial-grid" aria-busy="true" aria-label="Memuat sorotan budaya">
+              {Array.from({ length: 3 }).map((_, idx) => (
+                <article className="editorial-card skeleton-card" key={idx}>
+                  <div className="editorial-card__image-wrap skeleton" />
+                  <div className="editorial-card__tags">
+                    <span className="skeleton skeleton-tag" />
+                    <span className="skeleton skeleton-tag" />
+                  </div>
+                  <div className="skeleton skeleton-text skeleton-text--title" />
+                  <div className="skeleton skeleton-text" />
+                  <div className="skeleton skeleton-text skeleton-text--short" />
+                  <div className="skeleton skeleton-tag" style={{ marginTop: '0.85rem', width: '100px' }} />
+                </article>
+              ))}
+            </div>
           ) : (
             <div className="editorial-grid">
               {featuredCultures.map((item) => (
@@ -199,28 +213,6 @@ export default function LandingPage() {
               ))}
             </div>
           )}
-        </div>
-      </section>
-
-      {/* ================= APA KATA MEREKA TENTANG KAMI ================= */}
-      <section className="testimonials-section">
-        <div className="container-wide">
-          <div className="section-heading text-center">
-            <span className="section-eyebrow">SUARA KOMUNITAS</span>
-            <h2 className="section-title">Apa Kata Mereka Tentang Kami</h2>
-          </div>
-
-          <div className="testimonials-grid">
-            {testimonials.map((t) => (
-              <div className="testimonial-card" key={t.id}>
-                <p className="testimonial-card__text">{t.text}</p>
-                <div className="testimonial-card__author">
-                  <div className="testimonial-card__name">{t.name}</div>
-                  <div className="testimonial-card__role">{t.role}</div>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 

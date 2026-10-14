@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Compass, Users, BadgeCheck, ArrowRight, PlayCircle, Quote, Sparkles } from 'lucide-react';
-import { provinces, features, cultures, articles, testimonials, heroImage } from '../data/mock';
+import { Compass, Users, BadgeCheck, ArrowRight, PlayCircle, Sparkles } from 'lucide-react';
+import { provinces, features, cultures, articles, heroImage } from '../data/mock';
 import './LandingPage.css';
 
 const iconMap = { Compass, Users, BadgeCheck };
@@ -139,31 +139,6 @@ const LandingPage = () => {
                 <h3 className="artikel-title">{a.title}</h3>
                 <p className="artikel-excerpt">{a.excerpt}</p>
               </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* TESTIMONIALS */}
-      <section className="testimonial-section">
-        <div className="container-narrow">
-          <div className="section-header">
-            <span className="section-eyebrow">Suara Komunitas</span>
-            <h2 className="section-title">Apa Kata Mereka Tentang Kami</h2>
-          </div>
-          <div className="testimonial-grid">
-            {testimonials.map((t) => (
-              <div key={t.id} className="testimonial-card">
-                <Quote className="testimonial-quote-icon" style={{ width: 28, height: 28 }} />
-                <p className="testimonial-text">“{t.text}”</p>
-                <div className="testimonial-author">
-                  <div className="testimonial-avatar">{t.name.charAt(0)}</div>
-                  <div>
-                    <p className="testimonial-name">{t.name}</p>
-                    <p className="testimonial-role">{t.role}</p>
-                  </div>
-                </div>
-              </div>
             ))}
           </div>
         </div>

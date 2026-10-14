@@ -180,7 +180,23 @@ export default function ExplorePage() {
 
         {/* Loading / Error / Data */}
         {loading ? (
-          <div className="text-center p-10 font-bold text-gray-500">⏳ Memuat Data...</div>
+          <div className="explore-grid" aria-busy="true" aria-label="Memuat data budaya">
+            {Array.from({ length: 6 }).map((_, idx) => (
+              <div className="explore-card skeleton-card" key={idx}>
+                <div className="explore-card__image-wrap skeleton" />
+                <div className="explore-card__body">
+                  <div className="explore-card__tags">
+                    <span className="skeleton skeleton-tag" />
+                    <span className="skeleton skeleton-tag" />
+                  </div>
+                  <div className="skeleton skeleton-text skeleton-text--title" />
+                  <div className="skeleton skeleton-text" />
+                  <div className="skeleton skeleton-text skeleton-text--short" />
+                  <div className="skeleton skeleton-tag" style={{ marginTop: '0.85rem', width: '90px' }} />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : error ? (
           <div className="text-center p-10 font-bold text-red-500">{error}</div>
         ) : cultures.length > 0 ? (

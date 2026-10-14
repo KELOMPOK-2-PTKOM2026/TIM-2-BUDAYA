@@ -19,14 +19,13 @@ class ProposalController extends Controller
     {
         $validated = $request->validate([
             'title'             => 'required|string|max:255',
-            'province_name'     => 'required|string|max:255',
-            'category_name'     => 'required|string|max:255',
+            'province_name'     => 'required|string|max:255|exists:provinces,name',
+            'category_name'     => 'required|string|max:255|exists:categories,name',
             'description'       => 'required|string',
             'source'            => 'nullable|string',
             'history'           => 'nullable|string',
             'facts'             => 'nullable|array',
             'copyright_consent' => 'nullable|boolean',
-            'status'            => 'nullable|in:draft,pending',
             'image_path'        => 'nullable|string',
             'images'            => 'nullable|array|max:5',
             'images.*'          => 'required|file|mimes:jpg,jpeg,png,webp|max:5120',
@@ -42,6 +41,8 @@ class ProposalController extends Controller
                 $validated['image_path'] = $imagePaths[0];
             }
         }
+
+        $validated['status'] = 'pending';
 
         $proposal = $request->user()->proposals()->create($validated);
 
@@ -79,13 +80,19 @@ class ProposalController extends Controller
             'admin_note' => 'required_if:status,rejected|nullable|string',
         ]);
 
+        $proposal = CultureProposal::findOrFail($id);
+
+        if ($proposal->status !== 'pending') {
+            return response()->json([
+                'message' => 'Hanya usulan berstatus menunggu yang dapat diverifikasi.',
+            ], 403);
+        }
+
         $proposal = DB::transaction(function () use ($id, $validated) {
             $proposal = CultureProposal::lockForUpdate()->findOrFail($id);
 
             if ($proposal->status !== 'pending') {
-                throw ValidationException::withMessages([
-                    'status' => ['Hanya usulan berstatus menunggu yang dapat diverifikasi.'],
-                ]);
+                abort(403, 'Hanya usulan berstatus menunggu yang dapat diverifikasi.');
             }
 
             if ($validated['status'] === 'approved') {
@@ -122,6 +129,8 @@ class ProposalController extends Controller
                 ]);
             }
 
+            $proposal->reviewed_by = auth()->id();
+            $proposal->reviewed_at = now();
             $proposal->update($validated);
 
             return $proposal;

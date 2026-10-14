@@ -18,7 +18,33 @@ export default function Navbar() {
   const { pathname } = useLocation();
   
   const navRefs = useRef([]);
+  const profileRef = useRef(null);
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+
+  useEffect(() => {
+    setProfileOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!profileOpen) return;
+
+    const handleClickOutside = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    };
+
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') setProfileOpen(false);
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [profileOpen]);
 
   useEffect(() => {
     const updateIndicator = () => {
@@ -107,7 +133,7 @@ export default function Navbar() {
                 </Link>
               </>
             ) : (
-              <div className="navbar__profile">
+              <div className="navbar__profile" ref={profileRef}>
                 <button
                   type="button"
                   className="navbar__avatar"
@@ -119,11 +145,56 @@ export default function Navbar() {
                 </button>
                 {profileOpen && (
                   <div className="navbar__dropdown">
-                    <Link to="/profil" onClick={() => setProfileOpen(false)}>👤 Profil Saya</Link>
-                    {user.role === 'admin' && (
-                      <Link to="/admin" onClick={() => setProfileOpen(false)}>⚙️ Panel Admin</Link>
-                    )}
-                    <button type="button" onClick={logout}>🚪 Keluar</button>
+                    {/* Header Profil */}
+                    <div className="navbar__dropdown-header">
+                      <span className="navbar__dropdown-name">{user.name || 'Pengguna'}</span>
+                      <span className="navbar__dropdown-email">{user.email || ''}</span>
+                    </div>
+
+                    <div className="navbar__divider" />
+
+                    {/* Menu Items */}
+                    <div className="navbar__dropdown-menu">
+                      <Link to="/profil" className="navbar__dropdown-item" onClick={() => setProfileOpen(false)}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                          <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        <span>Profil Saya</span>
+                      </Link>
+                      <Link to="/kontribusi" className="navbar__dropdown-item" onClick={() => setProfileOpen(false)}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="3" y="3" width="7" height="7" />
+                          <rect x="14" y="3" width="7" height="7" />
+                          <rect x="3" y="14" width="7" height="7" />
+                          <rect x="14" y="14" width="7" height="7" />
+                        </svg>
+                        <span>Dashboard Kontributor</span>
+                      </Link>
+                      {user.role === 'admin' && (
+                        <Link to="/admin" className="navbar__dropdown-item" onClick={() => setProfileOpen(false)}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="3" />
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                          </svg>
+                          <span>Panel Admin</span>
+                        </Link>
+                      )}
+                    </div>
+
+                    <div className="navbar__divider" />
+
+                    {/* Logout */}
+                    <div className="navbar__dropdown-menu">
+                      <button type="button" className="navbar__dropdown-item navbar__dropdown-item--danger" onClick={() => { setProfileOpen(false); logout(); }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                          <polyline points="16 17 21 12 16 7" />
+                          <line x1="21" y1="12" x2="9" y2="12" />
+                        </svg>
+                        <span>Keluar</span>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

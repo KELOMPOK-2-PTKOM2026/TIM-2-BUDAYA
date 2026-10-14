@@ -93,7 +93,41 @@ export default function AdminPage() {
         {error && <div className="admin-error">{error}</div>}
 
         {loading ? (
-          <div className="admin-loading">Memuat usulan...</div>
+          <div className="admin-table-wrap" aria-busy="true" aria-label="Memuat usulan">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Usulan</th>
+                  <th>Pengusul</th>
+                  <th>Lokasi</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 4 }).map((_, idx) => (
+                  <tr key={idx} className="skeleton-card">
+                    <td>
+                      <div className="skeleton skeleton-text" style={{ width: '60%', height: '16px' }} />
+                      <div className="skeleton skeleton-text" style={{ width: '80%', height: '12px', margin: 0 }} />
+                    </td>
+                    <td>
+                      <div className="skeleton skeleton-text" style={{ width: '70%', height: '14px', margin: 0 }} />
+                    </td>
+                    <td>
+                      <div className="skeleton skeleton-text" style={{ width: '60%', height: '14px', margin: 0 }} />
+                    </td>
+                    <td>
+                      <div className="skeleton" style={{ width: '70px', height: '22px', borderRadius: '9999px' }} />
+                    </td>
+                    <td>
+                      <div className="skeleton" style={{ width: '80px', height: '30px', borderRadius: '6px' }} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : proposals.length === 0 ? (
           <div className="admin-empty">Tidak ada usulan dengan status ini.</div>
         ) : (
