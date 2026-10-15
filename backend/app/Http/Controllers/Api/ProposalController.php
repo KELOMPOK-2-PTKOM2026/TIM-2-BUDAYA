@@ -126,6 +126,8 @@ class ProposalController extends Controller
                     'history' => $proposal->history,
                     'facts' => $proposal->facts,
                     'status' => 'published',
+                    'created_by' => auth()->id(),
+                    'updated_by' => auth()->id(),
                 ]);
             }
 

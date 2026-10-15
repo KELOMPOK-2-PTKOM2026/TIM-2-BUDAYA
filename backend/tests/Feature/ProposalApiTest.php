@@ -71,4 +71,62 @@ class ProposalApiTest extends TestCase
             'status' => 'pending',
         ]);
     }
+
+    public function test_admin_approving_proposal_sets_culture_audit_fields(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create();
+        $province = Province::create(['name' => 'Sumatera Barat', 'slug' => 'sumbar']);
+        $category = Category::create(['name' => 'Tari Tradisional', 'slug' => 'tari-tradisional']);
+
+        $proposal = CultureProposal::create([
+            'user_id' => $user->id,
+            'title' => 'Tari Randai',
+            'province_name' => $province->name,
+            'category_name' => $category->name,
+            'description' => 'Kesenian teater dan tari khas Minangkabau.',
+            'status' => 'pending',
+        ]);
+
+        $res = $this->actingAs($admin)->postJson("/api/admin/proposals/{$proposal->id}/verify", [
+            'status' => 'approved',
+            'admin_note' => 'Disetujui untuk rilis',
+        ]);
+
+        $res->assertOk();
+        $this->assertDatabaseHas('cultures', [
+            'title' => 'Tari Randai',
+            'created_by' => $admin->id,
+            'updated_by' => $admin->id,
+        ]);
+    }
+
+    public function test_admin_can_update_culture_and_sets_updated_by(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $province = Province::create(['name' => 'Aceh', 'slug' => 'aceh']);
+        $category = Category::create(['name' => 'Adat dan Tradisi', 'slug' => 'adat-dan-tradisi']);
+
+        $culture = \App\Models\Culture::create([
+            'province_id' => $province->id,
+            'category_id' => $category->id,
+            'title' => 'Budaya Awal',
+            'slug' => 'budaya-awal',
+            'desc' => 'Deskripsi awal',
+            'image' => null,
+            'status' => 'published',
+        ]);
+
+        $res = $this->actingAs($admin)->putJson("/api/admin/cultures/{$culture->id}", [
+            'image' => '/images/new-image.jpg',
+            'desc' => 'Deskripsi diperbarui',
+        ]);
+
+        $res->assertOk();
+        $this->assertDatabaseHas('cultures', [
+            'id' => $culture->id,
+            'image' => '/images/new-image.jpg',
+            'updated_by' => $admin->id,
+        ]);
+    }
 }
