@@ -9,7 +9,7 @@ class Culture extends Model
 {
     protected $fillable = [
         'province_id', 'category_id', 'title', 'slug', 'image', 'desc', 'featured',
-        'status', 'source', 'history', 'facts', 'images',
+        'status', 'source', 'history', 'facts', 'images', 'created_by', 'updated_by',
     ];
 
     protected $casts = [
@@ -26,5 +26,15 @@ class Culture extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function editor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }
