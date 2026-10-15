@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../lib/api';
 // Hapus `editorialPicks` dari Mock, tetap gunakan variabel mock untuk aset statis jika ada.
 import { provinces, features, songketPattern } from '../data/Mock';
-import Hero from '../components/Hero';
+import Hero from '../components/Hero'; // Komponen Carousel Hero
 import '../styles/LandingPage.css';
 
 const STORAGE_URL = process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/';
