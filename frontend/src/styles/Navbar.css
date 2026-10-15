@@ -167,54 +167,178 @@
   box-shadow: 0 4px 12px rgba(19, 51, 42, 0.3);
 }
 
-/* Mobile Toggle */
-.navbar__mobile-toggle {
+/* Button Block & Danger Modifiers */
+.navbar__btn--block {
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  text-decoration: none;
+}
+
+.navbar__btn--danger {
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.navbar__btn--danger:hover {
+  background: #fef2f2;
+  border-color: #ef4444;
+  color: #991b1b;
+}
+
+/* ================= HAMBURGER BUTTON ================= */
+.navbar__hamburger {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-  color: #1a2e26;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0.4rem;
   background: transparent;
-  border: none;
+  border: 1px solid #ede8de;
+  border-radius: 6px;
   cursor: pointer;
+  z-index: 105;
+  transition: all 0.2s ease;
+}
+
+.navbar__hamburger:hover {
+  background: #faf8f5;
+  border-color: #ded6c8;
+}
+
+.navbar__hamburger-bar {
+  width: 100%;
+  height: 2px;
+  background-color: #1a2e26;
+  border-radius: 9999px;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.2s ease,
+              background-color 0.2s ease;
+  transform-origin: center;
+}
+
+.navbar__hamburger--open .navbar__hamburger-bar:nth-child(1) {
+  transform: translateY(5px) rotate(45deg);
+  background-color: #C4542E;
+}
+
+.navbar__hamburger--open .navbar__hamburger-bar:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.navbar__hamburger--open .navbar__hamburger-bar:nth-child(3) {
+  transform: translateY(-5px) rotate(-45deg);
+  background-color: #C4542E;
 }
 
 @media (min-width: 1024px) {
-  .navbar__mobile-toggle {
+  .navbar__hamburger {
     display: none;
   }
 }
 
-.navbar__mobile {
-  padding: 1rem 0 1.5rem;
-  border-top: 1px solid #ede8de;
+/* ================= MOBILE DRAWER & BACKDROP ================= */
+.navbar__overlay {
+  position: fixed;
+  inset: 0;
+  top: 4.25rem;
+  background-color: rgba(19, 51, 42, 0.35);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 95;
+}
+
+.navbar__overlay--open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.navbar__drawer {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #ede8de;
+  box-shadow: 0 16px 32px -8px rgba(19, 51, 42, 0.12);
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+  z-index: 100;
+  transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.25s ease,
+              visibility 0.35s ease;
+}
+
+.navbar__drawer--open {
+  max-height: 520px;
+  opacity: 1;
+  visibility: visible;
+}
+
+.navbar__drawer-inner {
+  padding: 1rem 1.25rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.875rem;
+  gap: 0.65rem;
 }
 
-@media (min-width: 1024px) {
-  .navbar__mobile {
-    display: none !important;
-  }
-}
-
-.navbar__mobile-link {
+.navbar__drawer-link {
   font-size: 0.95rem;
   font-weight: 500;
   color: #4b453e;
-  padding: 0.5rem 0;
+  padding: 0.6rem 0.5rem;
+  border-radius: 6px;
   text-decoration: none;
+  transition: all 0.2s ease;
 }
 
-.navbar__mobile-link:hover {
+.navbar__drawer-link:hover,
+.navbar__drawer-link.active {
   color: #C4542E;
+  background-color: #fff8f5;
+  font-weight: 600;
 }
 
-.navbar__mobile-actions {
+.navbar__drawer-actions {
   display: flex;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 0.65rem;
   padding-top: 1rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid #f0eae1;
+}
+
+.navbar__drawer-user {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.25rem 0.5rem 0.5rem;
+}
+
+.navbar__drawer-username {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a2e26;
+}
+
+.navbar__drawer-useremail {
+  font-size: 0.8rem;
+  color: #635c53;
+  word-break: break-all;
+}
+
+@media (min-width: 1024px) {
+  .navbar__overlay,
+  .navbar__drawer {
+    display: none !important;
+  }
 }
 
 .navbar__profile {

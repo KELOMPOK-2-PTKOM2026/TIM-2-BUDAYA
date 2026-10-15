@@ -93,45 +93,60 @@ export default function AdminPage() {
         {error && <div className="admin-error">{error}</div>}
 
         {loading ? (
-          <div className="admin-table-wrap" aria-busy="true" aria-label="Memuat usulan">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Usulan</th>
-                  <th>Pengusul</th>
-                  <th>Lokasi</th>
-                  <th>Status</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.from({ length: 4 }).map((_, idx) => (
-                  <tr key={idx} className="skeleton-card">
-                    <td>
-                      <div className="skeleton skeleton-text" style={{ width: '60%', height: '16px' }} />
-                      <div className="skeleton skeleton-text" style={{ width: '80%', height: '12px', margin: 0 }} />
-                    </td>
-                    <td>
-                      <div className="skeleton skeleton-text" style={{ width: '70%', height: '14px', margin: 0 }} />
-                    </td>
-                    <td>
-                      <div className="skeleton skeleton-text" style={{ width: '60%', height: '14px', margin: 0 }} />
-                    </td>
-                    <td>
-                      <div className="skeleton" style={{ width: '70px', height: '22px', borderRadius: '9999px' }} />
-                    </td>
-                    <td>
-                      <div className="skeleton" style={{ width: '80px', height: '30px', borderRadius: '6px' }} />
-                    </td>
+          <>
+            <div className="admin-table-wrap" aria-busy="true" aria-label="Memuat usulan">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Usulan</th>
+                    <th>Pengusul</th>
+                    <th>Lokasi</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {Array.from({ length: 4 }).map((_, idx) => (
+                    <tr key={idx} className="skeleton-card">
+                      <td>
+                        <div className="skeleton skeleton-text" style={{ width: '60%', height: '16px' }} />
+                        <div className="skeleton skeleton-text" style={{ width: '80%', height: '12px', margin: 0 }} />
+                      </td>
+                      <td>
+                        <div className="skeleton skeleton-text" style={{ width: '70%', height: '14px', margin: 0 }} />
+                      </td>
+                      <td>
+                        <div className="skeleton skeleton-text" style={{ width: '60%', height: '14px', margin: 0 }} />
+                      </td>
+                      <td>
+                        <div className="skeleton" style={{ width: '70px', height: '22px', borderRadius: '9999px' }} />
+                      </td>
+                      <td>
+                        <div className="skeleton" style={{ width: '80px', height: '30px', borderRadius: '6px' }} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Skeleton Cards */}
+            <div className="admin-cards-mobile" aria-busy="true">
+              {Array.from({ length: 3 }).map((_, idx) => (
+                <div key={idx} className="admin-card-item skeleton-card">
+                  <div className="skeleton skeleton-text" style={{ width: '60%', height: '18px', marginBottom: '8px' }} />
+                  <div className="skeleton skeleton-text" style={{ width: '40%', height: '14px', marginBottom: '12px' }} />
+                  <div className="skeleton skeleton-text" style={{ width: '80%', height: '14px' }} />
+                  <div className="skeleton skeleton-text" style={{ width: '50%', height: '14px' }} />
+                </div>
+              ))}
+            </div>
+          </>
         ) : proposals.length === 0 ? (
           <div className="admin-empty">Tidak ada usulan dengan status ini.</div>
         ) : (
           <>
+            {/* Desktop Table View */}
             <div className="admin-table-wrap">
               <table className="admin-table">
                 <thead>
@@ -186,6 +201,55 @@ export default function AdminPage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Cards Alternative View */}
+            <div className="admin-cards-mobile">
+              {proposals.map((proposal) => (
+                <div className="admin-card-item" key={proposal.id}>
+                  <div className="admin-card-item__header">
+                    <div>
+                      <h2 className="admin-card-item__title">{proposal.title}</h2>
+                      <span className="admin-card-item__category">{proposal.category_name}</span>
+                    </div>
+                    <span className={`admin-status admin-status--${proposal.status}`}>
+                      {statusLabels[proposal.status] || proposal.status}
+                    </span>
+                  </div>
+
+                  <div className="admin-card-item__meta">
+                    <div className="admin-card-item__meta-row">
+                      <span className="admin-card-item__meta-label">Pengusul</span>
+                      <span className="admin-card-item__meta-value">{proposal.user?.name || proposal.user?.email || '-'}</span>
+                    </div>
+                    <div className="admin-card-item__meta-row">
+                      <span className="admin-card-item__meta-label">Provinsi</span>
+                      <span className="admin-card-item__meta-value">{proposal.province_name}</span>
+                    </div>
+                  </div>
+
+                  {proposal.status === 'pending' && (
+                    <div className="admin-card-item__actions">
+                      <button
+                        type="button"
+                        className="admin-button admin-button--approve admin-button--full"
+                        disabled={activeId === proposal.id}
+                        onClick={() => verifyProposal(proposal.id, 'approved')}
+                      >
+                        Setujui
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-button admin-button--reject admin-button--full"
+                        disabled={activeId === proposal.id}
+                        onClick={() => verifyProposal(proposal.id, 'rejected')}
+                      >
+                        Tolak
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
 
             {pagination && pagination.last_page > 1 && (

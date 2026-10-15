@@ -1,0 +1,200 @@
+/* =========================================================
+   CONTRIBUTION PAGE STYLES - JELAJAH SUMATERA
+   BEM Architecture | Editorial Heritage Theme
+   ========================================================= */
+
+.contribution-page,
+.contact-page {
+  background-color: #faf7f2;
+  color: #2a2520;
+  min-height: calc(100vh - 4.25rem - 300px);
+  padding: 2.25rem 0 5rem 0;
+}
+
+/* ================= BREADCRUMB ================= */
+.contribution-breadcrumb,
+.contact-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  margin-bottom: 2rem;
+}
+
+.contribution-breadcrumb__link,
+.contact-breadcrumb__link {
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.contribution-breadcrumb__link:hover,
+.contact-breadcrumb__link:hover {
+  color: #c4542e;
+}
+
+.contribution-breadcrumb__separator,
+.contact-breadcrumb__separator {
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.contribution-breadcrumb__current,
+.contact-breadcrumb__current {
+  color: #c4542e;
+  font-weight: 600;
+}
+
+/* ================= MAIN LAYOUT ================= */
+.contribution-layout,
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 2.25rem;
+  align-items: start;
+}
+
+/* ================= FORM CARD ================= */
+.contribution-form-card,
+.contact-form-card {
+  background: #ffffff;
+  border: 1px solid #ebe5dc;
+  border-radius: 12px;
+  padding: 2.5rem 2.75rem;
+  box-shadow: 0 1px 4px rgba(21, 56, 43, 0.02);
+}
+
+.contribution-form-card__title,
+.contact-form-card__title {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 2.15rem;
+  font-weight: 700;
+  color: #15382b;
+  margin: 0 0 0.85rem 0;
+  line-height: 1.2;
+}
+
+.contribution-form-card__intro,
+.contact-form-card__intro {
+  margin: 0 0 1.75rem;
+  color: #556b62;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* ================= SIDEBAR ================= */
+.contribution-sidebar,
+.contact-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contribution-info-card,
+.contact-info-card {
+  background-color: #0f3328;
+  border-radius: 12px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 2px 8px rgba(15, 51, 40, 0.08);
+}
+
+.contribution-info-card__title,
+.contact-info-card__title {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #e5a83b;
+  margin: 0 0 1.5rem 0;
+  letter-spacing: -0.01em;
+}
+
+.contribution-info-list,
+.contact-info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.contribution-info-item,
+.contact-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  color: #d1ded9;
+  font-size: 0.925rem;
+  line-height: 1.5;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1024px) {
+  .contribution-layout,
+  .contact-layout {
+    grid-template-columns: 1fr 320px;
+    gap: 1.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .contribution-page,
+  .contact-page {
+    padding: 1.25rem 0 3.5rem 0;
+  }
+
+  .contribution-breadcrumb,
+  .contact-breadcrumb {
+    margin-bottom: 1.25rem;
+    font-size: 0.8rem;
+  }
+
+  /* Grid berubah jadi 1 kolom di layar mobile */
+  .contribution-layout,
+  .contact-layout {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem;
+  }
+
+  .contribution-form-card,
+  .contact-form-card {
+    padding: 1.25rem 1rem;
+    border-radius: 8px;
+  }
+
+  .contribution-form-card__title,
+  .contact-form-card__title {
+    font-size: 1.65rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .contribution-form-card__intro,
+  .contact-form-card__intro {
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .contribution-sidebar,
+  .contact-sidebar {
+    width: 100%;
+  }
+
+  .contribution-info-card,
+  .contact-info-card {
+    padding: 1.35rem 1.15rem;
+    border-radius: 8px;
+  }
+
+  .contribution-info-card__title,
+  .contact-info-card__title {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .contribution-info-item,
+  .contact-info-item {
+    font-size: 0.875rem;
+    gap: 0.65rem;
+  }
+}

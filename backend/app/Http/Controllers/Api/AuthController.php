@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -146,5 +147,74 @@ class AuthController extends Controller
         throw ValidationException::withMessages([
             'email' => [__($status)],
         ]);
+    }
+
+    public function redirectToGoogle(Request $request)
+    {
+        $targetUrl = Socialite::driver('google')->stateless()->redirect()->getTargetUrl();
+
+        if ($request->expectsJson() || $request->has('json')) {
+            return response()->json([
+                'url' => $targetUrl,
+            ]);
+        }
+
+        return redirect()->away($targetUrl);
+    }
+
+    public function handleGoogleCallback(Request $request)
+    {
+        $frontendUrl = rtrim(config('app.frontend_url', 'http://localhost:3000'), '/');
+
+        try {
+            $googleUser = Socialite::driver('google')->stateless()->user();
+        } catch (\Throwable $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Autentikasi Google gagal: ' . $e->getMessage(),
+                ], 422);
+            }
+
+            return redirect($frontendUrl . '/login?error=' . urlencode('Autentikasi Google gagal atau dibatalkan.'));
+        }
+
+        $user = User::where('google_id', $googleUser->getId())
+            ->orWhere('email', $googleUser->getEmail())
+            ->first();
+
+        if ($user) {
+            if (! $user->google_id) {
+                $user->update(['google_id' => $googleUser->getId()]);
+            }
+        } else {
+            $user = User::create([
+                'name'      => $googleUser->getName() ?? $googleUser->getNickname() ?? 'Pengguna Google',
+                'email'     => $googleUser->getEmail(),
+                'google_id' => $googleUser->getId(),
+                'password'  => null,
+                'role'      => 'user',
+            ]);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Login Google berhasil.',
+                'token'   => $token,
+                'user'    => $user->only('id', 'name', 'email', 'role'),
+                'role'    => $user->role,
+            ]);
+        }
+
+        $queryParams = http_build_query([
+            'token' => $token,
+            'id'    => $user->id,
+            'name'  => $user->name,
+            'email' => $user->email,
+            'role'  => $user->role,
+        ]);
+
+        return redirect("{$frontendUrl}/login?{$queryParams}");
     }
 }

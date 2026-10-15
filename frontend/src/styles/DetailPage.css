@@ -587,26 +587,42 @@
   }
 }
 
-@media (max-width: 680px) {
+@media (max-width: 768px) {
   .detail-topbar__inner {
     flex-direction: column;
     align-items: flex-start;
+    gap: 12px;
+  }
+
+  .detail-actions {
+    align-self: flex-start;
   }
 
   .detail-banner-card {
-    height: 240px;
+    height: 220px;
     border-radius: 10px;
   }
 
   .detail-gallery-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 
   .detail-related-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .detail-title {
-    font-size: 30px;
+    font-size: 26px;
+  }
+
+  .detail-meta-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .detail-facts-card {
+    padding: 18px 16px;
   }
 }

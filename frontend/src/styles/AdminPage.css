@@ -141,8 +141,93 @@
   background: #17603d;
 }
 
+.admin-button--approve:hover:not(:disabled) {
+  background: #124d31;
+}
+
 .admin-button--reject {
   background: #b63e2c;
+}
+
+.admin-button--reject:hover:not(:disabled) {
+  background: #962f1f;
+}
+
+.admin-button--full {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  font-size: 0.85rem;
+}
+
+/* ================= MOBILE CARDS ALTERNATIVE ================= */
+.admin-cards-mobile {
+  display: none;
+}
+
+.admin-card-item {
+  background: #faf8f5;
+  border: 1px solid #ebe4d5;
+  border-radius: 10px;
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+}
+
+.admin-card-item__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.admin-card-item__title {
+  margin: 0 0 0.25rem;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #15382b;
+  line-height: 1.25;
+}
+
+.admin-card-item__category {
+  font-size: 0.8rem;
+  color: #8c5d2e;
+  font-weight: 500;
+}
+
+.admin-card-item__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.65rem 0.75rem;
+  background: #ffffff;
+  border: 1px solid #eee8df;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.admin-card-item__meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-card-item__meta-label {
+  color: #635c53;
+  font-weight: 500;
+}
+
+.admin-card-item__meta-value {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.admin-card-item__actions {
+  display: flex;
+  gap: 0.65rem;
+  margin-top: 0.25rem;
 }
 
 .admin-empty,
@@ -173,20 +258,60 @@
   opacity: 0.5;
 }
 
-@media (max-width: 700px) {
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
   .admin-page {
-    padding: 2rem 1rem;
+    padding: 1.5rem 0.85rem;
+    min-height: calc(100vh - 4.25rem);
   }
 
   .admin-card {
-    padding: 1.25rem;
+    padding: 1.25rem 1rem;
+    border-radius: 12px;
   }
 
   .admin-header {
     flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .admin-title {
+    font-size: 1.65rem;
+  }
+
+  .admin-subtitle {
+    font-size: 0.875rem;
   }
 
   .admin-filter {
     width: 100%;
+    min-width: 0;
+  }
+
+  /* Sembunyikan tabel di layar kecil, tampilkan kartu mobile */
+  .admin-table-wrap {
+    display: none;
+  }
+
+  .admin-cards-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .admin-pagination {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    gap: 0.65rem;
+    margin-top: 1.5rem;
+  }
+
+  .admin-pagination button {
+    width: 100%;
+    padding: 0.65rem;
+    font-size: 0.875rem;
   }
 }

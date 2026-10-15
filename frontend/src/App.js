@@ -10,6 +10,7 @@ import ContributionPage from './pages/ContributionPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 import Navbar from './components/Navbar';
@@ -42,6 +43,8 @@ function App() {
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/daftar" element={<RegisterPage />} />
               <Route path="/lupa-password" element={<ForgotPasswordPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route
                 path="/profil"
                 element={
