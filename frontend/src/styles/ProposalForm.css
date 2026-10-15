@@ -448,9 +448,10 @@
 /* --------------------------------------------------------------------------
    8. Responsive Adjustments
    -------------------------------------------------------------------------- */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .proposal-form__card {
-    padding: 1.25rem;
+    padding: 1.25rem 1rem;
+    border-radius: 8px;
   }
 
   .proposal-form__row {
@@ -459,30 +460,37 @@
   }
 
   .proposal-stepper {
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.5rem;
   }
 
   .proposal-stepper__circle {
-    width: 34px;
-    height: 34px;
-    font-size: 0.85rem;
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
   }
 
   .proposal-stepper__line {
-    top: 16px;
+    top: 15px;
   }
 
   .proposal-stepper__label {
-    font-size: 0.775rem;
+    font-size: 0.725rem;
   }
 
   .proposal-form__title {
-    font-size: 1.4rem;
+    font-size: 1.35rem;
+  }
+
+  .proposal-form__header {
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
   }
 
   .proposal-form__actions {
     flex-direction: column-reverse;
-    gap: 0.75rem;
+    gap: 0.65rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
   }
 
   .proposal-form__actions--between,
@@ -497,5 +505,6 @@
   .proposal-form__action-group {
     width: 100%;
     flex-direction: column;
+    gap: 0.65rem;
   }
 }

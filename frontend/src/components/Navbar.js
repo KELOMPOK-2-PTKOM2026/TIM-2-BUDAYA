@@ -23,6 +23,7 @@ export default function Navbar() {
 
   useEffect(() => {
     setProfileOpen(false);
+    setMobileOpen(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -202,64 +203,80 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Menu Toggle */}
-          <button className="navbar__mobile-toggle" onClick={toggleMobile} aria-label="Toggle menu">
-            {mobileOpen ? (
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            ) : (
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
-            )}
+          <button
+            type="button"
+            className={`navbar__hamburger ${mobileOpen ? 'navbar__hamburger--open' : ''}`}
+            onClick={toggleMobile}
+            aria-label={mobileOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
+            aria-expanded={mobileOpen}
+          >
+            <span className="navbar__hamburger-bar" />
+            <span className="navbar__hamburger-bar" />
+            <span className="navbar__hamburger-bar" />
           </button>
         </div>
 
-        {/* Mobile Dropdown */}
-        {mobileOpen && (
-          <div className="navbar__mobile">
+        {/* Mobile Drawer Backdrop */}
+        <div
+          className={`navbar__overlay ${mobileOpen ? 'navbar__overlay--open' : ''}`}
+          onClick={closeMobile}
+          aria-hidden="true"
+        />
+
+        {/* Mobile Drawer */}
+        <div className={`navbar__drawer ${mobileOpen ? 'navbar__drawer--open' : ''}`}>
+          <div className="navbar__drawer-inner">
             {navItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
                 end={item.path === '/'}
-                className="navbar__mobile-link"
+                className="navbar__drawer-link"
                 onClick={closeMobile}
               >
                 {item.name}
               </NavLink>
             ))}
-            <div className="navbar__mobile-actions">
+
+            <div className="navbar__drawer-actions">
               {!user ? (
                 <>
-                  <Link to="/login" className="navbar__btn-outline" style={{ width: '100%', textAlign: 'center', textDecoration: 'none' }} onClick={closeMobile}>
+                  <Link to="/login" className="navbar__btn-outline navbar__btn--block" onClick={closeMobile}>
                     Masuk
                   </Link>
-                  <Link to="/register" className="navbar__btn-filled" style={{ width: '100%', textAlign: 'center', textDecoration: 'none' }} onClick={closeMobile}>
+                  <Link to="/register" className="navbar__btn-filled navbar__btn--block" onClick={closeMobile}>
                     Daftar
                   </Link>
                 </>
               ) : (
                 <>
-                  <Link to="/profil" className="navbar__btn-outline" style={{ width: '100%', textAlign: 'center', textDecoration: 'none' }} onClick={closeMobile}>
-                    👤 Profil Saya
+                  <div className="navbar__drawer-user">
+                    <span className="navbar__drawer-username">{user.name || 'Pengguna'}</span>
+                    <span className="navbar__drawer-useremail">{user.email || ''}</span>
+                  </div>
+                  <Link to="/profil" className="navbar__btn-outline navbar__btn--block" onClick={closeMobile}>
+                    Profil Saya
+                  </Link>
+                  <Link to="/kontribusi" className="navbar__btn-outline navbar__btn--block" onClick={closeMobile}>
+                    Dashboard Kontributor
                   </Link>
                   {user.role === 'admin' && (
-                    <Link to="/admin" className="navbar__btn-filled" style={{ width: '100%', textAlign: 'center', textDecoration: 'none' }} onClick={closeMobile}>
-                      ⚙️ Panel Admin
+                    <Link to="/admin" className="navbar__btn-filled navbar__btn--block" onClick={closeMobile}>
+                      Panel Admin
                     </Link>
                   )}
-                  <button type="button" className="navbar__btn-outline" onClick={() => { closeMobile(); logout(); }}>
-                    🚪 Keluar
+                  <button
+                    type="button"
+                    className="navbar__btn-outline navbar__btn--block navbar__btn--danger"
+                    onClick={() => { closeMobile(); logout(); }}
+                  >
+                    Keluar
                   </button>
                 </>
               )}
             </div>
           </div>
-        )}
+        </div>
       </div>
     </header>
   );

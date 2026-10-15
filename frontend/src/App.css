@@ -81,6 +81,13 @@ html { scroll-behavior: smooth; }
 .container-narrow { max-width: 64rem; margin: 0 auto; padding: 0 1.5rem; }
 @media (min-width: 1024px) { .container-narrow { padding: 0 2.5rem; } }
 
+@media (max-width: 640px) {
+  .container-wide,
+  .container-narrow {
+    padding: 0 1rem;
+  }
+}
+
 /* ============ SECTION HEADER ============ */
 .section-eyebrow { display: block; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: #C4542E; font-weight: 500; }
 .section-title { font-family: 'EB Garamond', serif; font-size: 2.5rem; color: #1C3B2E; margin-top: 0.75rem; line-height: 1.1; }

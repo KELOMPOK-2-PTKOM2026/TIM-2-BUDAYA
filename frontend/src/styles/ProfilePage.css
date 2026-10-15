@@ -249,3 +249,34 @@
   color: #991b1b;
   border: 1px solid #fecaca;
 }
+
+@media (max-width: 768px) {
+  .profile-page {
+    padding: 24px 14px;
+  }
+
+  .profile-title {
+    font-size: 24px;
+  }
+
+  .profile-card,
+  .proposal-form-section,
+  .proposals-history {
+    padding: 18px 14px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .proposal-item {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .proposal-submit-btn {
+    width: 100%;
+    text-align: center;
+  }
+}

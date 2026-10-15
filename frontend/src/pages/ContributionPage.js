@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProposalForm from '../components/ProposalForm';
-import '../styles/ContactPage.css';
+import '../styles/ContributionPage.css';
 
 export default function ContributionPage() {
   useEffect(() => {

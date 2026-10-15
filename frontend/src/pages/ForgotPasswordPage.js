@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../lib/api';
 import AlertModal from '../components/AlertModal';
 import '../styles/Auth.css';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,
@@ -35,7 +37,7 @@ export default function ForgotPasswordPage() {
     document.title = 'Lupa Password — JelajahSumatera';
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email) {
       showAlert({
@@ -48,7 +50,25 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    setSubmitted(true);
+    setLoading(true);
+    try {
+      await api.post('/forgot-password', { email });
+      setSubmitted(true);
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.errors?.email?.[0] ||
+        err.response?.data?.message ||
+        'Gagal mengirim tautan reset password. Pastikan email terdaftar.';
+      showAlert({
+        type: 'error',
+        eyebrow: 'Pengiriman Gagal',
+        title: 'Email Tidak Ditemukan',
+        message: errorMsg,
+        confirmText: 'Coba Lagi',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -97,8 +117,8 @@ export default function ForgotPasswordPage() {
               />
             </div>
 
-            <button type="submit" className="auth-btn-primary">
-              Kirim Link Reset
+            <button type="submit" className="auth-btn-primary" disabled={loading}>
+              {loading ? 'Mengirim...' : 'Kirim Link Reset'}
             </button>
           </form>
         )}
