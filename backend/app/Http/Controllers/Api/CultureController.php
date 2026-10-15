@@ -20,25 +20,31 @@ class CultureController extends Controller
             });
         }
 
-        $provinceIds = $request->query('province_ids');
-        if (is_array($provinceIds) && $provinceIds !== []) {
-            $query->whereIn('province_id', $provinceIds);
+        if ($provinceId = $request->query('province_id')) {
+            $query->where('province_id', $provinceId);
+        } elseif ($provinceIds = $request->query('province_ids')) {
+            if (is_array($provinceIds) && $provinceIds !== []) {
+                $query->whereIn('province_id', $provinceIds);
+            }
         } elseif ($province = $request->query('province')) {
-            $query->whereHas('province', fn ($query) => $query->where('slug', $province));
+            $query->whereHas('province', fn ($q) => $q->where('slug', $province));
         }
 
-        $categoryIds = $request->query('category_ids');
-        if (is_array($categoryIds) && $categoryIds !== []) {
-            $query->whereIn('category_id', $categoryIds);
+        if ($categoryId = $request->query('category_id')) {
+            $query->where('category_id', $categoryId);
+        } elseif ($categoryIds = $request->query('category_ids')) {
+            if (is_array($categoryIds) && $categoryIds !== []) {
+                $query->whereIn('category_id', $categoryIds);
+            }
         } elseif ($category = $request->query('category')) {
-            $query->whereHas('category', fn ($query) => $query->where('slug', $category));
+            $query->whereHas('category', fn ($q) => $q->where('slug', $category));
         }
 
-        if ($request->query('featured')) {
-            $query->where('featured', true);
+        if ($request->has('featured')) {
+            $query->where('featured', filter_var($request->query('featured'), FILTER_VALIDATE_BOOLEAN));
         }
 
-        $perPage = $request->query('per_page', 6);
+        $perPage = $request->integer('per_page', 12);
         return response()->json($query->paginate($perPage));
     }
 
@@ -90,6 +96,29 @@ class CultureController extends Controller
         return response()->json([
             'message' => 'Budaya berhasil diperbarui.',
             'data'    => $culture->load(['province', 'category', 'creator', 'editor']),
+        ]);
+    }
+
+    public function feature(Request $request, int $id)
+    {
+        $culture = Culture::findOrFail($id);
+
+        $validated = $request->validate([
+            'featured' => 'nullable|boolean',
+        ]);
+
+        $newFeatured = array_key_exists('featured', $validated)
+            ? (bool) $validated['featured']
+            : ! $culture->featured;
+
+        $culture->update([
+            'featured'   => $newFeatured,
+            'updated_by' => auth()->id(),
+        ]);
+
+        return response()->json([
+            'message' => $newFeatured ? 'Budaya berhasil dijadikan unggulan (Hero).' : 'Budaya dicabut dari status unggulan (Hero).',
+            'data'    => $culture->load(['province', 'category']),
         ]);
     }
 }

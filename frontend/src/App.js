@@ -1,4 +1,5 @@
 // file: d:\PTKOM\Baru\TIM-2-BUDAYA\frontend\src\App.js
+import { useState, useEffect } from 'react';
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
@@ -18,11 +19,24 @@ import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
+  };
+
   return (
     <BrowserRouter>
       <AuthProvider>
         <div className="app-shell">
-          <Navbar />
+          <Navbar theme={theme} toggleTheme={toggleTheme} />
           <main className="app-main">
             <Routes>
               <Route path="/" element={<LandingPage />} />

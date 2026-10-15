@@ -3,7 +3,7 @@
    ========================================================= */
 
 .contact-page {
-  background-color: #faf7f2;
+  background-color: transparent;
   color: #2a2520;
   min-height: calc(100vh - 4.25rem - 300px);
   padding: 2.25rem 0 5rem 0;

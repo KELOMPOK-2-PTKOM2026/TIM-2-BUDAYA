@@ -25,6 +25,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::match(['put', 'patch'], '/me', [AuthController::class, 'updateProfile']);
+    Route::post('/email/verification-notification', [AuthController::class, 'resendVerificationEmail'])
+        ->middleware('throttle:6,1');
     Route::get('/proposals/mine', [ProposalController::class, 'myProposals']);
 
     Route::middleware('throttle:5,1')->group(function () {
@@ -36,6 +38,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
     Route::get('/proposals', [ProposalController::class, 'allProposals']);
     Route::post('/proposals/{id}/verify', [ProposalController::class, 'verify']);
 
+    Route::patch('/cultures/{id}/feature', [CultureController::class, 'feature']);
     Route::match(['put', 'patch'], '/cultures/{id}', [CultureController::class, 'update']);
 
     Route::get('/provinces', [ProvinceController::class, 'index']);

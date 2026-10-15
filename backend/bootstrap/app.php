@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->trustProxies(at: '*');
         $middleware->alias([
             'role' => RoleMiddleware::class,
         ]);
@@ -22,4 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        $exceptions->render(function (\Illuminate\Routing\Exceptions\InvalidSignatureException $e, Request $request) {
+            $frontendUrl = rtrim(config('app.frontend_url', 'http://localhost:3000'), '/');
+            return redirect($frontendUrl . '/login?error=' . urlencode('Tautan verifikasi tidak valid atau telah kedaluwarsa.'));
+        });
     })->create();

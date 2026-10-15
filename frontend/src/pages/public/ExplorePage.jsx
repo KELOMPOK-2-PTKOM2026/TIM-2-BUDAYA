@@ -32,7 +32,7 @@ const ExplorePage = () => {
       </div>
 
       <div className="explore-header">
-        <h1 className="explore-title">Eksplorasi Khazanah Budaya</h1>
+        <h1 className="explore-title">Jelajahi Warisan Budaya</h1>
         <p className="explore-desc">Lebih dari 400 entri budaya dari 10 provinsi di Sumatera. Saring berdasarkan kategori, provinsi, atau cari langsung berdasarkan nama.</p>
       </div>
 

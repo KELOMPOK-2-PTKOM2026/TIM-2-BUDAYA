@@ -21,13 +21,13 @@
   position: relative;
   width: 100%;
   max-width: 430px;
-  background-color: #ffffff;
-  border: 1px solid #ebe4d5;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 18px;
   padding: 2.25rem 2rem 1.85rem;
   box-shadow: 
-    0 24px 48px -12px rgba(13, 36, 30, 0.22),
-    0 4px 16px rgba(0, 0, 0, 0.04);
+    0 24px 48px -12px rgba(0, 0, 0, 0.35),
+    0 4px 16px rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
   text-align: center;
   animation: alertModalSlideUp 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -79,8 +79,8 @@
 }
 
 .alert-modal-close:hover {
-  background-color: #f7f3ec;
-  color: #1C3B2E;
+  background-color: var(--bg-main);
+  color: var(--heading-color);
 }
 
 /* Header */
@@ -103,27 +103,27 @@
 }
 
 .alert-modal-icon-badge--warning {
-  background-color: #fdf1ea;
-  border: 1px solid #f8dcd0;
+  background-color: rgba(196, 84, 46, 0.12);
+  border: 1px solid rgba(196, 84, 46, 0.25);
   color: #C4542E;
 }
 
 .alert-modal-icon-badge--error {
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
+  background-color: rgba(220, 38, 38, 0.12);
+  border: 1px solid rgba(220, 38, 38, 0.25);
   color: #dc2626;
 }
 
 .alert-modal-icon-badge--success {
-  background-color: #eaf6ee;
-  border: 1px solid #d2edd9;
+  background-color: rgba(22, 163, 74, 0.12);
+  border: 1px solid rgba(22, 163, 74, 0.25);
   color: #16a34a;
 }
 
 .alert-modal-icon-badge--info {
-  background-color: #eaf3ee;
-  border: 1px solid #d4e7dc;
-  color: #1C3B2E;
+  background-color: rgba(28, 59, 46, 0.15);
+  border: 1px solid var(--border-color);
+  color: var(--heading-color);
 }
 
 .alert-modal-eyebrow {
@@ -140,7 +140,7 @@
   font-family: 'EB Garamond', Georgia, serif;
   font-size: 1.65rem;
   font-weight: 700;
-  color: #1C3B2E;
+  color: var(--heading-color);
   margin: 0;
   line-height: 1.25;
 }
@@ -154,7 +154,7 @@
   font-family: 'Inter', -apple-system, sans-serif;
   font-size: 0.935rem;
   line-height: 1.6;
-  color: #4b453e;
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -207,9 +207,9 @@
 
 .alert-modal-btn-secondary {
   flex: 1;
-  background-color: #faf7f2;
-  color: #4b453e;
-  border: 1px solid #ebe4d5;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 0.8rem 1.2rem;
   font-family: 'Inter', -apple-system, sans-serif;

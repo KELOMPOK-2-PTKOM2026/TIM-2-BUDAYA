@@ -24,7 +24,22 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>Jelajah Sumatera - Ensiklopedia Kebudayaan Sumatera</title>
+    <style>
+      body {
+        background-color: var(--bg-main, #f7f3ec);
+        background-image: linear-gradient(var(--bg-main, #f7f3ec), var(--bg-main, #f7f3ec)), url("%PUBLIC_URL%/images/auth-pattern-bg.jpg");
+        background-blend-mode: multiply;
+        background-repeat: repeat;
+        background-size: 280px auto;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+      [data-theme="dark"] body {
+        background-color: var(--bg-main, #121614);
+        background-image: linear-gradient(var(--bg-main, #121614), var(--bg-main, #121614)), url("%PUBLIC_URL%/images/auth-pattern-bg.jpg");
+        background-blend-mode: multiply;
+      }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

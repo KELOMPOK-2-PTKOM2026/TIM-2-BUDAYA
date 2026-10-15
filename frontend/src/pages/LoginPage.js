@@ -58,12 +58,31 @@ export default function LoginPage() {
       return;
     }
 
+    const verifiedParam = params.get('verified');
+    if (verifiedParam === '1') {
+      showAlert({
+        type: 'success',
+        eyebrow: 'Verifikasi Berhasil',
+        title: 'Email Terverifikasi',
+        message: 'Email Anda berhasil diverifikasi. Silakan masuk ke akun Anda.',
+        confirmText: 'Lanjutkan',
+      });
+    } else if (verifiedParam === 'already') {
+      showAlert({
+        type: 'info',
+        eyebrow: 'Informasi',
+        title: 'Sudah Terverifikasi',
+        message: 'Email Anda sudah terverifikasi sebelumnya. Silakan masuk ke akun Anda.',
+        confirmText: 'Lanjutkan',
+      });
+    }
+
     const errorParam = params.get('error');
     if (errorParam) {
       showAlert({
         type: 'error',
-        eyebrow: 'Autentikasi Google Gagal',
-        title: 'Gagal Masuk Akun',
+        eyebrow: 'Pemberitahuan',
+        title: 'Verifikasi / Masuk Gagal',
         message: errorParam,
         confirmText: 'Saya Mengerti',
       });

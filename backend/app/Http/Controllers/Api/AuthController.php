@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -27,6 +29,8 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
             'role'     => 'user',
         ]);
+
+        event(new Registered($user));
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -216,5 +220,36 @@ class AuthController extends Controller
         ]);
 
         return redirect("{$frontendUrl}/login?{$queryParams}");
+    }
+
+    public function verifyEmail(Request $request, $id, $hash)
+    {
+        $frontendUrl = rtrim(config('app.frontend_url', 'http://localhost:3000'), '/');
+        $user = User::findOrFail($id);
+
+        if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+            return redirect($frontendUrl . '/login?error=' . urlencode('Tautan verifikasi tidak valid atau tidak cocok.'));
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect($frontendUrl . '/login?verified=already');
+        }
+
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
+        }
+
+        return redirect($frontendUrl . '/login?verified=1');
+    }
+
+    public function resendVerificationEmail(Request $request)
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email sudah terverifikasi sebelumnya.'], 400);
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return response()->json(['message' => 'Tautan verifikasi baru telah dikirim ke email Anda.']);
     }
 }

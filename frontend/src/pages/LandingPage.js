@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../lib/api';
 // Hapus `editorialPicks` dari Mock, tetap gunakan variabel mock untuk aset statis jika ada.
-import { provinces, features, heroImage, songketPattern } from '../data/Mock';
+import { provinces, features, songketPattern } from '../data/Mock';
+import Hero from '../components/Hero';
 import '../styles/LandingPage.css';
 
 const STORAGE_URL = process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/';
@@ -64,40 +65,8 @@ export default function LandingPage() {
 
   return (
     <div className="landing-page">
-      {/* ================= HERO SECTION ================= */}
-      <section className="hero">
-        <div className="container-wide">
-          <div className="hero__banner">
-            <img src={heroImage} alt="Pemandangan Alam Sumatra" className="hero__bg" />
-            <div className="hero__gradient-overlay" />
-
-            <div className="hero__content">
-              <span className="hero__eyebrow">
-                — EKSPLORASI KEBUDAYAAN NUSANTARA
-              </span>
-
-              <h1 className="hero__title">
-                Jelajahi Kekayaan Budaya<br />
-                Sumatra
-              </h1>
-
-              <p className="hero__desc">
-                Arsip digital terlengkap yang mengurasi seni, tradisi, kuliner, dan arsitektur peninggalan leluhur dari 10 provinsi di pulau Sumatra. Dibangun bersama para ahli dan kontributor terverifikasi.
-              </p>
-
-              <div className="hero__actions">
-                <Link to="/eksplorasi" className="hero__btn-primary">
-                  Mulai Jelajah
-                </Link>
-                <Link to="/tentang" className="hero__btn-secondary">
-                  Tentang Kami
-                  <span className="hero__btn-arrow">&rarr;</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ================= HERO CAROUSEL SECTION ================= */}
+      <Hero />
 
       {/* ================= 3 VALUE CARDS ================= */}
       <section className="value-props">
@@ -120,7 +89,7 @@ export default function LandingPage() {
       <section className="provinces-section">
         <div className="container-wide">
           <div className="section-heading text-center">
-            <span className="section-eyebrow">Peta Khazanah</span>
+            <span className="section-eyebrow">Peta Budaya</span>
             <h2 className="section-title">Eksplorasi Per Provinsi</h2>
           </div>
 

@@ -4,9 +4,7 @@
 
 .auth-page {
   min-height: calc(100vh - 4.25rem - 320px);
-  background-color: #f7f3ec;
-  background-repeat: repeat;
-  background-size: 280px auto;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,11 +14,11 @@
 .auth-card {
   width: 100%;
   max-width: 490px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 16px;
-  border: 1px solid #ebe5dc;
+  border: 1px solid var(--border-color);
   padding: 2.75rem 2.75rem;
-  box-shadow: 0 4px 20px -2px rgba(21, 56, 43, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.03);
   box-sizing: border-box;
 }
 
@@ -54,25 +52,25 @@
 .auth-icon-badge--soft {
   width: 54px;
   height: 54px;
-  background-color: #fff3ec;
+  background-color: rgba(196, 84, 46, 0.12);
   border-radius: 14px;
   color: #c4542e;
   box-shadow: none;
-  border: 1px solid #f8e1d5;
+  border: 1px solid rgba(196, 84, 46, 0.25);
 }
 
 .auth-title {
   font-family: 'EB Garamond', Georgia, serif;
   font-size: 2.15rem;
   font-weight: 700;
-  color: #15382b;
+  color: var(--heading-color);
   margin: 0 0 0.4rem 0;
   line-height: 1.2;
 }
 
 .auth-subtitle {
   font-size: 0.875rem;
-  color: #55665e;
+  color: var(--text-secondary);
   line-height: 1.6;
   margin: 0;
 }
@@ -99,7 +97,7 @@
 .auth-label {
   font-size: 0.875rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--text-primary);
   margin-bottom: 0.45rem;
 }
 
@@ -128,24 +126,31 @@
 .auth-input {
   width: 100%;
   box-sizing: border-box;
-  background-color: #ffffff;
-  border: 1px solid #e2ddd4;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 0.8rem 1rem;
   font-size: 0.925rem;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #1f2937;
+  color: var(--text-primary);
   transition: all 0.2s ease;
 }
 
 .auth-input::placeholder {
-  color: #9ca3af;
+  color: var(--text-secondary);
 }
 
 .auth-input:focus {
   outline: none;
   border-color: #c4542e;
   box-shadow: 0 0 0 3px rgba(196, 84, 46, 0.12);
+}
+
+.auth-input::-ms-reveal,
+.auth-input::-ms-clear {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .auth-input--with-icon {
