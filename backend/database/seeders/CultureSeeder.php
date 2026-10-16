@@ -50,6 +50,7 @@ class CultureSeeder extends Seeder {
                 $item['desc'] = $item['desc: '];
                 unset($item['desc: ']);
             }
+            $item['status'] = 'published';
             Culture::updateOrCreate(['slug' => $item['slug']], $item);
         }
     }
