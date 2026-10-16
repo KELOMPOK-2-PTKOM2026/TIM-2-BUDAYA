@@ -8,4 +8,4 @@ cmds = [
 ]
 
 [start]
-cmd = "if [ -d backend ]; then cd backend && touch database/database.sqlite && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT; else touch database/database.sqlite && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT; fi"
+cmd = "if [ -d backend ]; then cd backend; fi && mkdir -p database && touch database/database.sqlite && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT"
