@@ -15,6 +15,9 @@ WORKDIR /app
 
 COPY . .
 
+RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache/data storage/logs \
+    && chmod -R 777 storage bootstrap/cache
+
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 EXPOSE 8000
