@@ -11,4 +11,4 @@ cmds = [
 cmds = ["echo 'Backend build complete'"]
 
 [start]
-cmd = "if [ -d backend ]; then cd backend; fi && mkdir -p database && touch database/database.sqlite && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "if [ -d backend ]; then cd backend; fi && mkdir -p database && touch database/database.sqlite && php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT"

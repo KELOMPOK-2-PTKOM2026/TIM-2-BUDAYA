@@ -8,6 +8,7 @@ class DatabaseSeeder extends Seeder {
             UserSeeder::class,
             ProvinceSeeder::class,
             CategorySeeder::class,
+            CultureSeeder::class,
             CsvCultureSeeder::class,
         ]);
     }
