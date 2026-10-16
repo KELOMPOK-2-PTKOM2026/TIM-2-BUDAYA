@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\ProvinceController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/users-list', fn () => response()->json(\App\Models\User::all(['id', 'name', 'email'])));
+Route::post('/email/resend-verification', [AuthController::class, 'resendVerificationEmail'])
+    ->middleware('throttle:6,1');
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle']);

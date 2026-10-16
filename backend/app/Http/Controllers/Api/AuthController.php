@@ -254,11 +254,26 @@ class AuthController extends Controller
 
     public function resendVerificationEmail(Request $request)
     {
-        if ($request->user()->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Email sudah terverifikasi sebelumnya.'], 400);
+        $user = $request->user();
+
+        if (! $user) {
+            $validated = $request->validate([
+                'email' => 'required|email',
+            ]);
+            $user = User::where('email', $validated['email'])->first();
+
+            if (! $user) {
+                return response()->json([
+                    'message' => 'Jika email Anda terdaftar, tautan verifikasi baru telah dikirim.',
+                ]);
+            }
         }
 
-        $request->user()->sendEmailVerificationNotification();
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email sudah terverifikasi sebelumnya. Silakan langsung masuk.'], 400);
+        }
+
+        $user->sendEmailVerificationNotification();
 
         return response()->json(['message' => 'Tautan verifikasi baru telah dikirim ke email Anda.']);
     }

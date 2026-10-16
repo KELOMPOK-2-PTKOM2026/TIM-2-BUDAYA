@@ -18,7 +18,13 @@ export default function RegisterPage() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendStatus, setResendStatus] = useState(null);
+
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,
     type: 'warning',
@@ -40,17 +46,21 @@ export default function RegisterPage() {
   };
 
   const closeModal = () => {
-    const wasSuccess = modalConfig.type === 'success';
     setModalConfig((prev) => ({ ...prev, isOpen: false }));
-    if (wasSuccess) {
-      navigate('/login');
-    }
   };
 
   useEffect(() => {
     window.scrollTo(0, 0);
     document.title = 'Buat Akun Baru — JelajahSumatera';
   }, []);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -63,6 +73,37 @@ export default function RegisterPage() {
   const handleGoogleLogin = () => {
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
     window.location.href = `${apiBaseUrl}/auth/google/redirect`;
+  };
+
+  const handleResendVerification = async () => {
+    if (resendCooldown > 0 || resendLoading) return;
+    setResendLoading(true);
+    setResendStatus(null);
+    try {
+      const { data } = await api.post('/email/resend-verification', {
+        email: registeredEmail,
+      });
+      setResendStatus({
+        type: 'success',
+        message: data.message || 'Tautan verifikasi baru berhasil dikirim ke email Anda.',
+      });
+      setResendCooldown(60);
+    } catch (error) {
+      const msg =
+        error.response?.data?.message ||
+        'Gagal mengirim ulang tautan verifikasi. Silakan coba sesaat lagi.';
+      setResendStatus({
+        type: 'error',
+        message: msg,
+      });
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+  const handleResetToRegister = () => {
+    setIsRegistered(false);
+    setResendStatus(null);
   };
 
   const handleSubmit = async (e) => {
@@ -88,6 +129,7 @@ export default function RegisterPage() {
       return;
     }
 
+    setLoading(true);
     try {
       const { data } = await api.post('/register', {
         name: formData.name,
@@ -98,19 +140,14 @@ export default function RegisterPage() {
 
       if (data.token) {
         login(data.user, data.token);
-        setSubmitted(true);
         setTimeout(() => {
           navigate('/');
         }, 1500);
       } else {
-        setSubmitted(true);
-        showAlert({
-          type: 'success',
-          eyebrow: 'Pendaftaran Berhasil',
-          title: 'Verifikasi Email Dikirim',
-          message: data.message || `Tautan verifikasi telah dikirim ke ${formData.email}. Silakan periksa kotak masuk atau spam email Anda untuk mengaktifkan akun.`,
-          confirmText: 'Ke Halaman Masuk',
-        });
+        setRegisteredEmail(formData.email);
+        setIsRegistered(true);
+        setResendCooldown(60);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } catch (error) {
       const msg = error.response?.data?.message || 'Pendaftaran gagal. Silakan coba lagi.';
@@ -121,6 +158,8 @@ export default function RegisterPage() {
         message: msg,
         confirmText: 'Tutup',
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -130,206 +169,368 @@ export default function RegisterPage() {
       style={{ backgroundImage: "url('/images/auth-pattern-bg.jpg')" }}
     >
       <div className="auth-card auth-card--wide">
-        {/* Header Icon & Title */}
-        <div className="auth-header">
-          <div className="auth-icon-badge">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <path d="m9 9 6 6" />
-              <path d="m15 9-6 6" />
-            </svg>
-          </div>
-          <h1 className="auth-title">Buat Akun Baru</h1>
-          <p className="auth-subtitle">
-            Bergabunglah sebagai kontributor budaya Sumatra
-          </p>
-        </div>
-
-        {submitted && (
-          <div className="auth-success-alert">
-            Pendaftaran berhasil diproses! Silakan periksa email Anda untuk verifikasi.
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="auth-form">
-          {/* Nama Lengkap */}
-          <div className="auth-field">
-            <label htmlFor="reg-name" className="auth-label">
-              Nama Lengkap
-            </label>
-            <input
-              type="text"
-              id="reg-name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="cth. Budi Siregar"
-              required
-              className="auth-input"
-            />
-          </div>
-
-          {/* Alamat Email */}
-          <div className="auth-field">
-            <label htmlFor="reg-email" className="auth-label">
-              Alamat Email
-            </label>
-            <input
-              type="email"
-              id="reg-email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="cth. budi@email.com"
-              required
-              className="auth-input"
-            />
-          </div>
-
-          {/* Password */}
-          <div className="auth-field">
-            <label htmlFor="reg-password" className="auth-label">
-              Password
-            </label>
-            <div className="auth-input-wrapper">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="reg-password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Masukkan password"
-                required
-                className="auth-input auth-input--with-icon"
-              />
-              <button
-                type="button"
-                className="auth-toggle-pwd"
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label="Toggle password visibility"
+        {isRegistered ? (
+          /* ================= LAYAR DINAMIS VERIFIKASI EMAIL ================= */
+          <div className="auth-verify-view">
+            <div className="auth-header">
+              <div
+                className="auth-icon-badge"
+                style={{
+                  backgroundColor: '#fff7ed',
+                  color: '#c4542e',
+                  borderColor: '#fed7aa',
+                }}
               >
-                {showPassword ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                    <line x1="1" y1="1" x2="23" y2="23" />
-                  </svg>
-                ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                )}
-              </button>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H17.5C20 5 22 7 22 9.5V17z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+              </div>
+              <h1 className="auth-title">Cek Email Anda</h1>
+              <p className="auth-subtitle">
+                Tautan verifikasi pendaftaran telah dikirimkan
+              </p>
             </div>
-            <span className="auth-pwd-strength">
-              Kekuatan Password: Sangat Kuat
-            </span>
-          </div>
 
-          {/* Konfirmasi Password */}
-          <div className="auth-field">
-            <label htmlFor="reg-confirm-password" className="auth-label">
-              Konfirmasi Password
-            </label>
-            <div className="auth-input-wrapper">
-              <input
-                type={showConfirmPassword ? 'text' : 'password'}
-                id="reg-confirm-password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Ulangi password"
-                required
-                className="auth-input auth-input--with-icon"
-              />
+            <div className="auth-verify-chip-box">
+              <div className="auth-verify-chip-label">Alamat Email Terdaftar</div>
+              <div className="auth-verify-email-text">{registeredEmail}</div>
+            </div>
+
+            <div className="auth-verify-guide">
+              <div className="auth-verify-guide-title">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Langkah Aktivasi Akun:
+              </div>
+              <ol className="auth-verify-guide-list">
+                <li>Buka kotak masuk (Inbox) email Anda.</li>
+                <li>
+                  Cari email dari <strong>Jelajah Sumatera</strong> dengan subjek verifikasi.
+                </li>
+                <li>
+                  Klik tombol atau tautan <strong>Verifikasi Alamat Email</strong> di dalamnya.
+                </li>
+              </ol>
+              <div className="auth-verify-tip">
+                <strong>Catatan:</strong> Jika email belum muncul di Inbox, periksa folder{' '}
+                <strong>Spam</strong> atau <strong>Promosi</strong>.
+              </div>
+            </div>
+
+            {resendStatus && (
+              <div
+                className={`auth-verify-status auth-verify-status--${resendStatus.type}`}
+              >
+                {resendStatus.message}
+              </div>
+            )}
+
+            <button
+              type="button"
+              className="auth-btn-primary"
+              onClick={() => navigate('/login')}
+            >
+              Lanjut ke Halaman Masuk
+            </button>
+
+            <button
+              type="button"
+              className="auth-btn-secondary"
+              onClick={handleResendVerification}
+              disabled={resendCooldown > 0 || resendLoading}
+            >
+              {resendLoading
+                ? 'Mengirim Ulang...'
+                : resendCooldown > 0
+                ? `Kirim Ulang Tautan (${resendCooldown}s)`
+                : 'Kirim Ulang Tautan Verifikasi'}
+            </button>
+
+            <div className="auth-footer-nav" style={{ marginTop: '1.25rem' }}>
+              Salah ketik email?{' '}
               <button
                 type="button"
-                className="auth-toggle-pwd"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                aria-label="Toggle password visibility"
+                onClick={handleResetToRegister}
+                className="auth-link"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  font: 'inherit',
+                  cursor: 'pointer',
+                }}
               >
-                {showConfirmPassword ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                    <line x1="1" y1="1" x2="23" y2="23" />
-                  </svg>
-                ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                )}
+                Daftar ulang dengan email lain
               </button>
             </div>
           </div>
+        ) : (
+          /* ================= FORM PENDAFTARAN UTAMA ================= */
+          <>
+            <div className="auth-header">
+              <div className="auth-icon-badge">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <path d="m9 9 6 6" />
+                  <path d="m15 9-6 6" />
+                </svg>
+              </div>
+              <h1 className="auth-title">Buat Akun Baru</h1>
+              <p className="auth-subtitle">
+                Bergabunglah sebagai kontributor budaya Sumatra
+              </p>
+            </div>
 
-          {/* Persetujuan */}
-          <div className="auth-checkbox-group">
-            <input
-              type="checkbox"
-              id="reg-terms"
-              name="agreed"
-              checked={formData.agreed}
-              onChange={handleChange}
-              className="auth-checkbox"
-            />
-            <label htmlFor="reg-terms">
-              Saya setuju dengan{' '}
-              <Link to="/syarat-ketentuan" className="auth-link">
-                Syarat &amp; Ketentuan
-              </Link>{' '}
-              serta{' '}
-              <Link to="/kebijakan-privasi" className="auth-link">
-                Kebijakan Privasi
+            <form onSubmit={handleSubmit} className="auth-form">
+              {/* Nama Lengkap */}
+              <div className="auth-field">
+                <label htmlFor="reg-name" className="auth-label">
+                  Nama Lengkap
+                </label>
+                <input
+                  type="text"
+                  id="reg-name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="cth. Budi Siregar"
+                  required
+                  className="auth-input"
+                />
+              </div>
+
+              {/* Alamat Email */}
+              <div className="auth-field">
+                <label htmlFor="reg-email" className="auth-label">
+                  Alamat Email
+                </label>
+                <input
+                  type="email"
+                  id="reg-email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="cth. budi@email.com"
+                  required
+                  className="auth-input"
+                />
+              </div>
+
+              {/* Password */}
+              <div className="auth-field">
+                <label htmlFor="reg-password" className="auth-label">
+                  Password
+                </label>
+                <div className="auth-input-wrapper">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    id="reg-password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Masukkan password"
+                    required
+                    className="auth-input auth-input--with-icon"
+                  />
+                  <button
+                    type="button"
+                    className="auth-toggle-pwd"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label="Toggle password visibility"
+                  >
+                    {showPassword ? (
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                        <line x1="1" y1="1" x2="23" y2="23" />
+                      </svg>
+                    ) : (
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+                <span className="auth-pwd-strength">
+                  Kekuatan Password: Sangat Kuat
+                </span>
+              </div>
+
+              {/* Konfirmasi Password */}
+              <div className="auth-field">
+                <label htmlFor="reg-confirm-password" className="auth-label">
+                  Konfirmasi Password
+                </label>
+                <div className="auth-input-wrapper">
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    id="reg-confirm-password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="Ulangi password"
+                    required
+                    className="auth-input auth-input--with-icon"
+                  />
+                  <button
+                    type="button"
+                    className="auth-toggle-pwd"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    aria-label="Toggle password visibility"
+                  >
+                    {showConfirmPassword ? (
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                        <line x1="1" y1="1" x2="23" y2="23" />
+                      </svg>
+                    ) : (
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Persetujuan */}
+              <div className="auth-checkbox-group">
+                <input
+                  type="checkbox"
+                  id="reg-terms"
+                  name="agreed"
+                  checked={formData.agreed}
+                  onChange={handleChange}
+                  className="auth-checkbox"
+                />
+                <label htmlFor="reg-terms">
+                  Saya setuju dengan{' '}
+                  <Link to="/syarat-ketentuan" className="auth-link">
+                    Syarat &amp; Ketentuan
+                  </Link>{' '}
+                  serta{' '}
+                  <Link to="/kebijakan-privasi" className="auth-link">
+                    Kebijakan Privasi
+                  </Link>
+                  .
+                </label>
+              </div>
+
+              {/* Tombol Daftar */}
+              <button
+                type="submit"
+                className="auth-btn-primary"
+                disabled={loading}
+              >
+                {loading ? 'Memproses Pendaftaran...' : 'Daftar Sekarang'}
+              </button>
+
+              <div className="auth-divider">atau</div>
+
+              {/* Tombol Masuk dengan Google */}
+              <button
+                type="button"
+                className="auth-btn-google"
+                onClick={handleGoogleLogin}
+              >
+                <span className="auth-btn-google__icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24">
+                    <path
+                      fill="#4285F4"
+                      d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
+                    />
+                    <path
+                      fill="#EA4335"
+                      d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+                    />
+                  </svg>
+                </span>
+                <span>Daftar dengan Google</span>
+              </button>
+            </form>
+
+            {/* Link Footer */}
+            <div className="auth-footer-nav">
+              Sudah punya akun?{' '}
+              <Link to="/login" className="auth-link">
+                Masuk
               </Link>
-              .
-            </label>
-          </div>
-
-          {/* Tombol Daftar */}
-          <button type="submit" className="auth-btn-primary">
-            Daftar Sekarang
-          </button>
-
-          <div className="auth-divider">atau</div>
-
-          {/* Tombol Masuk dengan Google */}
-          <button
-            type="button"
-            className="auth-btn-google"
-            onClick={handleGoogleLogin}
-          >
-            <span className="auth-btn-google__icon">
-              <svg width="18" height="18" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-                />
-              </svg>
-            </span>
-            <span>Daftar dengan Google</span>
-          </button>
-        </form>
-
-        {/* Link Footer */}
-        <div className="auth-footer-nav">
-          Sudah punya akun?{' '}
-          <Link to="/login" className="auth-link">
-            Masuk
-          </Link>
-        </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Editorial Custom Alert Modal */}

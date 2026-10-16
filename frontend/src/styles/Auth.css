@@ -348,6 +348,131 @@
   transform: translateX(-2px);
 }
 
+/* ================= VERIFICATION NOTICE & DYNAMIC FLOW ================= */
+.auth-btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.auth-btn-secondary {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #faf7f2;
+  color: #78350f;
+  border: 1px solid #e5d8c5;
+  border-radius: 6px;
+  padding: 0.8rem 1rem;
+  font-size: 0.925rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.75rem;
+}
+
+.auth-btn-secondary:hover:not(:disabled) {
+  background-color: #f3ece0;
+  border-color: #c4542e;
+  color: #c4542e;
+}
+
+.auth-btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-verify-chip-box {
+  background-color: #fdf8f4;
+  border: 1px solid #f3d7c6;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  margin: 1.25rem 0;
+  text-align: center;
+}
+
+.auth-verify-chip-label {
+  font-size: 0.8rem;
+  color: #78350f;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.auth-verify-email-text {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #c4542e;
+  word-break: break-all;
+}
+
+.auth-verify-guide {
+  background-color: #ffffff;
+  border: 1px solid #ede8e1;
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.auth-verify-guide-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #292524;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.auth-verify-guide-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #57534e;
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.auth-verify-guide-list li {
+  margin-bottom: 0.35rem;
+}
+
+.auth-verify-tip {
+  background-color: #fefce8;
+  border-left: 3px solid #eab308;
+  padding: 0.65rem 0.85rem;
+  border-radius: 4px;
+  font-size: 0.825rem;
+  color: #713f12;
+  margin-top: 0.75rem;
+  line-height: 1.45;
+}
+
+.auth-verify-status {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.auth-verify-status--success {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.auth-verify-status--error {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
 /* ================= RESPONSIVE ================= */
 @media (max-width: 640px) {
   .auth-page {
