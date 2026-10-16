@@ -5,5 +5,8 @@ nixPkgs = ["php83", "php83Packages.composer", "php83Extensions.pdo_sqlite", "php
 [phases.install]
 cmds = ["composer install --no-dev --optimize-autoloader --no-interaction"]
 
+[phases.build]
+cmds = ["echo 'Backend build complete'"]
+
 [start]
 cmd = "mkdir -p database && touch database/database.sqlite && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT"
