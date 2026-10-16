@@ -36,13 +36,9 @@ class AuthController extends Controller
             \Illuminate\Support\Facades\Log::warning('Gagal mengirim email verifikasi saat register: ' . $e->getMessage());
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
         return response()->json([
-            'message' => 'Registrasi berhasil.',
-            'token'   => $token,
-            'user'    => $user->only('id', 'name', 'email', 'role'),
-            'role'    => $user->role,
+            'message'               => 'Registrasi berhasil. Tautan verifikasi telah dikirim ke email Anda. Silakan periksa kotak masuk atau spam.',
+            'requires_verification' => true,
         ], 201);
     }
 
@@ -58,6 +54,12 @@ class AuthController extends Controller
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['Kredensial tidak valid.'],
+            ]);
+        }
+
+        if (! $user->hasVerifiedEmail()) {
+            throw ValidationException::withMessages([
+                'email' => ['Email belum diverifikasi. Silakan periksa kotak masuk atau folder spam email Anda untuk mengaktifkan akun.'],
             ]);
         }
 
@@ -194,13 +196,17 @@ class AuthController extends Controller
             if (! $user->google_id) {
                 $user->update(['google_id' => $googleUser->getId()]);
             }
+            if (! $user->hasVerifiedEmail()) {
+                $user->markEmailAsVerified();
+            }
         } else {
             $user = User::create([
-                'name'      => $googleUser->getName() ?? $googleUser->getNickname() ?? 'Pengguna Google',
-                'email'     => $googleUser->getEmail(),
-                'google_id' => $googleUser->getId(),
-                'password'  => null,
-                'role'      => 'user',
+                'name'              => $googleUser->getName() ?? $googleUser->getNickname() ?? 'Pengguna Google',
+                'email'             => $googleUser->getEmail(),
+                'google_id'         => $googleUser->getId(),
+                'password'          => null,
+                'role'              => 'user',
+                'email_verified_at' => now(),
             ]);
         }
 

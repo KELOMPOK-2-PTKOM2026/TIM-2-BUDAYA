@@ -13,18 +13,20 @@ class UserSeeder extends Seeder
         User::firstOrCreate(
             ['email' => 'admin@jelajahsumatera.id'],
             [
-                'name'     => 'Admin Jelajah',
-                'password' => Hash::make('password'),
-                'role'     => 'admin',
+                'name'              => 'Admin Jelajah',
+                'password'          => Hash::make('password'),
+                'role'              => 'admin',
+                'email_verified_at' => now(),
             ]
         );
 
         User::firstOrCreate(
             ['email' => 'user@jelajahsumatera.id'],
             [
-                'name'     => 'User Demo',
-                'password' => Hash::make('password'),
-                'role'     => 'user',
+                'name'              => 'User Demo',
+                'password'          => Hash::make('password'),
+                'role'              => 'user',
+                'email_verified_at' => now(),
             ]
         );
     }

@@ -40,7 +40,11 @@ export default function RegisterPage() {
   };
 
   const closeModal = () => {
+    const wasSuccess = modalConfig.type === 'success';
     setModalConfig((prev) => ({ ...prev, isOpen: false }));
+    if (wasSuccess) {
+      navigate('/login');
+    }
   };
 
   useEffect(() => {
@@ -91,12 +95,23 @@ export default function RegisterPage() {
         password: formData.password,
         password_confirmation: formData.confirmPassword,
       });
-      
-      login(data.user, data.token);
-      setSubmitted(true);
-      setTimeout(() => {
-        navigate('/');
-      }, 1500);
+
+      if (data.token) {
+        login(data.user, data.token);
+        setSubmitted(true);
+        setTimeout(() => {
+          navigate('/');
+        }, 1500);
+      } else {
+        setSubmitted(true);
+        showAlert({
+          type: 'success',
+          eyebrow: 'Pendaftaran Berhasil',
+          title: 'Verifikasi Email Dikirim',
+          message: data.message || `Tautan verifikasi telah dikirim ke ${formData.email}. Silakan periksa kotak masuk atau spam email Anda untuk mengaktifkan akun.`,
+          confirmText: 'Ke Halaman Masuk',
+        });
+      }
     } catch (error) {
       const msg = error.response?.data?.message || 'Pendaftaran gagal. Silakan coba lagi.';
       showAlert({
@@ -132,7 +147,7 @@ export default function RegisterPage() {
 
         {submitted && (
           <div className="auth-success-alert">
-            Pendaftaran berhasil diproses! Mengalihkan ke halaman masuk...
+            Pendaftaran berhasil diproses! Silakan periksa email Anda untuk verifikasi.
           </div>
         )}
 
