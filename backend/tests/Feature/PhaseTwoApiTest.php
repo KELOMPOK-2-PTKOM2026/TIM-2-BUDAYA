@@ -173,4 +173,71 @@ class PhaseTwoApiTest extends TestCase
 
         $this->assertDatabaseHas('categories', ['id' => $category->id]);
     }
+
+    public function test_registration_creates_unverified_user_and_blocks_unverified_login(): void
+    {
+        $res = $this->postJson('/api/register', [
+            'name'                  => 'Budi Unverified',
+            'email'                 => 'budi.unverified@example.com',
+            'password'              => 'Password123',
+            'password_confirmation' => 'Password123',
+        ]);
+
+        $res->assertStatus(201)
+            ->assertJsonPath('requires_verification', true);
+
+        $this->assertDatabaseHas('users', [
+            'email'             => 'budi.unverified@example.com',
+            'email_verified_at' => null,
+        ]);
+
+        $loginRes = $this->postJson('/api/login', [
+            'email'    => 'budi.unverified@example.com',
+            'password' => 'Password123',
+        ]);
+
+        $loginRes->assertStatus(422)
+            ->assertJsonValidationErrors(['email']);
+    }
+
+    public function test_unverified_user_can_reregister_without_unique_constraint_error(): void
+    {
+        User::factory()->create([
+            'name'              => 'Initial User',
+            'email'             => 'retry.unverified@example.com',
+            'email_verified_at' => null,
+        ]);
+
+        $res = $this->postJson('/api/register', [
+            'name'                  => 'Updated User',
+            'email'                 => 'retry.unverified@example.com',
+            'password'              => 'NewPassword123',
+            'password_confirmation' => 'NewPassword123',
+        ]);
+
+        $res->assertStatus(201);
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'retry.unverified@example.com',
+            'name'  => 'Updated User',
+        ]);
+    }
+
+    public function test_verified_user_cannot_reregister_with_same_email(): void
+    {
+        User::factory()->create([
+            'email'             => 'verified@example.com',
+            'email_verified_at' => now(),
+        ]);
+
+        $res = $this->postJson('/api/register', [
+            'name'                  => 'Another Name',
+            'email'                 => 'verified@example.com',
+            'password'              => 'Password123',
+            'password_confirmation' => 'Password123',
+        ]);
+
+        $res->assertStatus(422)
+            ->assertJsonValidationErrors(['email']);
+    }
 }

@@ -19,16 +19,33 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
+            'email'    => 'required|email|max:255',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user = User::create([
-            'name'     => $validated['name'],
-            'email'    => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role'     => 'user',
-        ]);
+        $existingUser = User::where('email', $validated['email'])->first();
+
+        if ($existingUser) {
+            if ($existingUser->hasVerifiedEmail()) {
+                throw ValidationException::withMessages([
+                    'email' => ['Email sudah terdaftar dan terverifikasi. Silakan masuk.'],
+                ]);
+            }
+
+            // Akun belum terverifikasi: perbarui data dan kirim ulang verifikasi
+            $existingUser->update([
+                'name'     => $validated['name'],
+                'password' => Hash::make($validated['password']),
+            ]);
+            $user = $existingUser;
+        } else {
+            $user = User::create([
+                'name'     => $validated['name'],
+                'email'    => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'role'     => 'user',
+            ]);
+        }
 
         try {
             event(new Registered($user));
