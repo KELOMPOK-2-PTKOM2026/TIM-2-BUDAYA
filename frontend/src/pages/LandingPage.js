@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import api from '../lib/api';
+import { resolveImageUrl, handleImageError } from '../lib/media';
 // Hapus `editorialPicks` dari Mock, tetap gunakan variabel mock untuk aset statis jika ada.
 import { provinces, features, songketPattern } from '../data/Mock';
 import Hero from '../components/Hero'; // Komponen Carousel Hero
 import '../styles/LandingPage.css';
-
-const STORAGE_URL = process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/';
 
 // Custom icons matching the 3 feature cards in the screenshot
 const featureIconMap = {
@@ -38,6 +38,7 @@ const featureIconMap = {
 };
 
 export default function LandingPage() {
+  const { user } = useContext(AuthContext);
   const [featuredCultures, setFeaturedCultures] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -55,13 +56,6 @@ export default function LandingPage() {
     };
     fetchFeatured();
   }, []);
-
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return '/images/dummy-budaya.svg';
-    if (imagePath.startsWith('http')) return imagePath;
-    if (imagePath.startsWith('/images/')) return imagePath;
-    return `${STORAGE_URL}${imagePath}`;
-  };
 
   return (
     <div className="landing-page">
@@ -111,7 +105,7 @@ export default function LandingPage() {
                     }}
                   />
                   <div className="province-card__overlay" />
-                  <span className="province-card__badge">{prov.count} Budaya</span>
+                  <span className="province-card__badge">{prov.tag}</span>
                   <div className="province-card__caption">
                     <h3 className="province-card__name">{prov.name}</h3>
                     <span className="province-card__link">
@@ -160,7 +154,12 @@ export default function LandingPage() {
                 <article className="editorial-card" key={item.id}>
                   <Link to={`/budaya/${item.slug}`} className="editorial-card__media-link">
                     <div className="editorial-card__image-wrap">
-                      <img src={getImageUrl(item.image)} alt={item.title} className="editorial-card__img" />
+                      <img
+                        src={resolveImageUrl(item.image, item.category)}
+                        alt={item.title}
+                        className="editorial-card__img"
+                        onError={handleImageError(item.category)}
+                      />
                     </div>
                   </Link>
 
@@ -197,12 +196,14 @@ export default function LandingPage() {
             <div className="cta-banner__content">
               <h2 className="cta-banner__title">Punya Pengetahuan Budaya Setempat?</h2>
               <p className="cta-banner__desc">
-                Bantu kami memperluas peta warisan budaya Sumatera. Ajukan tulisan, foto, atau video tradisi unik di sekitar Anda untuk diverifikasi oleh tim kami.
+                {user
+                  ? 'Bantu kami memperluas peta warisan budaya Sumatera. Ajukan tulisan dan foto tradisi unik di sekitar Anda untuk diverifikasi oleh tim kami.'
+                  : 'Siapa pun dapat menjelajahi informasi budaya. Untuk mengajukan budaya baru, daftar dan verifikasi akun Anda sebagai Kontributor terlebih dahulu.'}
               </p>
             </div>
             <div className="cta-banner__action">
-              <Link to="/kontribusi" className="cta-banner__btn">
-                Ajukan Sekarang
+              <Link to={user ? '/kontribusi' : '/register'} className="cta-banner__btn">
+                {user ? 'Ajukan Sekarang' : 'Daftar Jadi Kontributor'}
               </Link>
             </div>
           </div>

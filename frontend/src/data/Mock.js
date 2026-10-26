@@ -1,14 +1,15 @@
+// Gambar kartu provinsi memakai foto budaya khas daerah masing-masing (aset lokal di /public/images)
 export const provinces = [
-  { id: 'aceh', name: 'Aceh', slug: 'aceh', image: 'https://images.unsplash.com/photo-1622597943118-45ebacc528d1?crop=entropy&cs=srgb&fm=jpg&q=85&w=800', tag: 'Serambi Mekah', count: 120 },
-  { id: 'sumut', name: 'Sumatera Utara', slug: 'sumatera-utara', image: 'https://images.unsplash.com/photo-1569081562679-6d71c00aab86?crop=entropy&cs=srgb&fm=jpg&q=85&w=800', tag: 'Danau Toba', count: 210 },
-  { id: 'sumbar', name: 'Sumatera Barat', slug: 'sumatera-barat', image: 'https://images.unsplash.com/photo-1606633007433-a1abd835f6cd?crop=entropy&cs=srgb&fm=jpg&q=85&w=800', tag: 'Ranah Minang', count: 185 },
-  { id: 'riau', name: 'Riau', slug: 'riau', image: 'https://images.unsplash.com/photo-1694769473628-a6a01930ae73?crop=entropy&cs=srgb&fm=jpg&q=85&w=800', tag: 'Bumi Lancang Kuning', count: 94 },
-  { id: 'kepri', name: 'Kepulauan Riau', slug: 'kepulauan-riau', image: 'https://images.unsplash.com/photo-1553193094-d7add06beb10?crop=entropy&cs=srgb&fm=jpg&q=85&w=800', tag: 'Bunda Tanah Melayu', count: 76 },
-  { id: 'jambi', name: 'Jambi', slug: 'jambi', image: 'https://images.unsplash.com/photo-1708481686679-1bfebe1afefc?crop=entropy&cs=srgb&fm=jpg&q=85&w=800', tag: 'Sepucuk Jambi Sembilan Lurah', count: 88 },
-  { id: 'sumsel', name: 'Sumatera Selatan', slug: 'sumatera-selatan', image: 'https://images.unsplash.com/photo-1571669829691-9bfdc2943044?crop=entropy&cs=srgb&fm=jpg&q=85&w=800', tag: 'Bumi Sriwijaya', count: 160 },
-  { id: 'bengkulu', name: 'Bengkulu', slug: 'bengkulu', image: 'https://images.unsplash.com/photo-1634532999884-ecd677928bac?crop=entropy&cs=srgb&fm=jpg&q=85&w=800', tag: 'Bumi Rafflesia', count: 65 },
-  { id: 'lampung', name: 'Lampung', slug: 'lampung', image: 'https://images.unsplash.com/photo-1592639298199-7b9d01c1cf29?crop=entropy&cs=srgb&fm=jpg&q=85&w=800', tag: 'Sang Bumi Ruwa Jurai', count: 110 },
-  { id: 'babel', name: 'Bangka Belitung', slug: 'bangka-belitung', image: 'https://images.unsplash.com/photo-1444362408440-274ecb6fc730?crop=entropy&cs=srgb&fm=jpg&q=85&w=800', tag: 'Negeri Serumpun Sebalai', count: 52 },
+  { id: 'aceh', name: 'Aceh', slug: 'aceh', image: '/images/saman-aceh-1.jpg', tag: 'Serambi Mekah' },
+  { id: 'sumut', name: 'Sumatera Utara', slug: 'sumatera-utara', image: '/images/rumah-bolon.jpg', tag: 'Danau Toba' },
+  { id: 'sumbar', name: 'Sumatera Barat', slug: 'sumatera-barat', image: '/images/tari-piring.jpg', tag: 'Ranah Minang' },
+  { id: 'riau', name: 'Riau', slug: 'riau', image: '/images/baju-kurung-teluk-belanga.jpg', tag: 'Bumi Lancang Kuning' },
+  { id: 'kepri', name: 'Kepulauan Riau', slug: 'kepulauan-riau', image: '/images/kebaya-labuh.jpg', tag: 'Bunda Tanah Melayu' },
+  { id: 'jambi', name: 'Jambi', slug: 'jambi', image: '/images/baju-tanggung-jambi.jpg', tag: 'Sepucuk Jambi Sembilan Lurah' },
+  { id: 'sumsel', name: 'Sumatera Selatan', slug: 'sumatera-selatan', image: '/images/aesan-gede.jpg', tag: 'Bumi Sriwijaya' },
+  { id: 'bengkulu', name: 'Bengkulu', slug: 'bengkulu', image: '/images/baju-betabur-bengkulu.jpg', tag: 'Bumi Rafflesia' },
+  { id: 'lampung', name: 'Lampung', slug: 'lampung', image: '/images/siger-lampung.jpg', tag: 'Sang Bumi Ruwa Jurai' },
+  { id: 'babel', name: 'Bangka Belitung', slug: 'bangka-belitung', image: '/images/baju-paksian-belitung.jpg', tag: 'Negeri Serumpun Sebalai' },
 ];
 
 export const features = [
@@ -840,13 +841,6 @@ export const detailCulture = {
     },
   ],
 };
-
-export const aboutStats = [
-  { value: '150+', label: 'Budaya Terdaftar' },
-  { value: '10', label: 'Provinsi Sumatera' },
-  { value: '500+', label: 'Mitra Kontributor' },
-  { value: '50+', label: 'Reviewer Akademis' },
-];
 
 export const aboutMilestones = [
   {

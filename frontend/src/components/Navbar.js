@@ -2,7 +2,9 @@
 import { useState, useContext, useRef, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { getAccessLevel } from '../lib/roles';
 import '../styles/Navbar.css';
+import '../styles/AccessLevels.css';
 
 const navItems = [
   { name: 'Beranda', path: '/' },
@@ -15,6 +17,7 @@ export default function Navbar({ theme = 'light', toggleTheme }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const { user, logout } = useContext(AuthContext);
+  const access = getAccessLevel(user);
   const { pathname } = useLocation();
   
   const navRefs = useRef([]);
@@ -177,6 +180,9 @@ export default function Navbar({ theme = 'light', toggleTheme }) {
                     <div className="navbar__dropdown-header">
                       <span className="navbar__dropdown-name">{user.name || 'Pengguna'}</span>
                       <span className="navbar__dropdown-email">{user.email || ''}</span>
+                      <span className={`role-badge role-badge--${access.key}`} style={{ marginTop: '0.4rem', alignSelf: 'flex-start' }}>
+                        {access.label}
+                      </span>
                     </div>
 
                     <div className="navbar__divider" />
@@ -311,6 +317,9 @@ export default function Navbar({ theme = 'light', toggleTheme }) {
                   <div className="navbar__drawer-user">
                     <span className="navbar__drawer-username">{user.name || 'Pengguna'}</span>
                     <span className="navbar__drawer-useremail">{user.email || ''}</span>
+                    <span className={`role-badge role-badge--${access.key}`} style={{ marginTop: '0.4rem', alignSelf: 'flex-start' }}>
+                      {access.label}
+                    </span>
                   </div>
                   <Link to="/profil" className="navbar__btn-outline navbar__btn--block" onClick={closeMobile}>
                     Profil Saya

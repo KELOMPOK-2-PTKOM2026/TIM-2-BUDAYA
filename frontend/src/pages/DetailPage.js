@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../lib/api';
+import { getApiErrorMessage } from '../lib/errors';
+import { resolveImageUrl, getCultureGallery, handleImageError } from '../lib/media';
 import '../styles/DetailPage.css';
 
-const STORAGE_URL = process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/';
+// Pisahkan "Nama Sumber (https://...)" menjadi teks dan tautan agar URL bisa diklik
+function parseSource(source) {
+  const match = source.match(/https?:\/\/[^\s)]+/);
+  return match ? { text: source.replace(match[0], '').replace(/\(\s*\)/, '').trim(), url: match[0] } : { text: source, url: null };
+}
 
 export default function DetailPage() {
   const { slug } = useParams();
@@ -29,7 +35,7 @@ export default function DetailPage() {
         setRelatedItems(response.data.related);
       } catch (err) {
         console.error('Fetch detail error:', err);
-        setError(err.response?.status === 404 ? 'NotFound' : 'Terjadi kesalahan jaringan.');
+        setError(err.response?.status === 404 ? 'NotFound' : getApiErrorMessage(err, 'Gagal memuat detail budaya.'));
       } finally {
         setLoading(false);
       }
@@ -58,13 +64,6 @@ export default function DetailPage() {
     showToast(nextState ? 'Tersimpan ke daftar bookmark!' : 'Dihapus dari bookmark.');
   };
   
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return '/images/dummy-budaya.svg';
-    if (imagePath.startsWith('http')) return imagePath;
-    if (imagePath.startsWith('/images/')) return imagePath;
-    return `${STORAGE_URL}${imagePath}`;
-  };
-
   if (loading) {
     return (
       <div className="detail-page" aria-busy="true" aria-label="Memuat detail budaya">
@@ -127,6 +126,22 @@ export default function DetailPage() {
     );
   }
 
+  if (error && error !== 'NotFound') {
+    return (
+      <div className="detail-page">
+        <div className="container-wide">
+          <div className="detail-not-found">
+            <h1 style={{ fontSize: '40px' }}>Gagal Memuat</h1>
+            <p>{error}</p>
+            <button type="button" className="detail-back-button" onClick={() => window.location.reload()} style={{ border: 'none', cursor: 'pointer' }}>
+              Muat Ulang Halaman
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (error === 'NotFound' || (!culture && !loading)) {
     return (
       <div className="detail-page">
@@ -145,14 +160,17 @@ export default function DetailPage() {
   const pageTitle = culture.title;
   const regionTag = culture.province?.name;
   const categoryTag = culture.category?.name;
-  const mainImage = getImageUrl(culture.image);
+  const mainImage = resolveImageUrl(culture.image, culture.category);
+  const onImageError = handleImageError(culture.category);
 
-  // Buat galeri palsu untuk contoh (karena backend hanya punya 1 kolom 'image')
-  const galleryImages = [
-    { src: mainImage, alt: `${pageTitle} - Utama` },
-    { src: '/images/dummy-budaya.svg', alt: 'Arsip 2' },
-    { src: '/images/dummy-budaya.svg', alt: 'Arsip 3' },
-  ];
+  // Galeri hanya berisi foto asli dari kolom `image` + `images`; tidak ada gambar dummy pengisi
+  const galleryImages = getCultureGallery(culture).map((src, idx) => ({
+    src,
+    alt: `${pageTitle} - Foto ${idx + 1}`,
+  }));
+  const facts = Array.isArray(culture.facts) ? culture.facts.filter(Boolean) : [];
+  const historyParagraphs = (culture.history || '').split(/\n+/).map((p) => p.trim()).filter(Boolean);
+  const source = culture.source ? parseSource(culture.source) : null;
 
   return (
     <div className="detail-page">
@@ -179,7 +197,7 @@ export default function DetailPage() {
       <section className="detail-hero-section">
         <div className="container-wide">
           <div className="detail-banner-card">
-            <img src={mainImage} alt={pageTitle} className="detail-banner-card__img" />
+            <img src={mainImage} alt={pageTitle} className="detail-banner-card__img" onError={onImageError} />
           </div>
         </div>
       </section>
@@ -198,17 +216,59 @@ export default function DetailPage() {
                 <p>{culture.desc}</p>
               </div>
 
+              {historyParagraphs.length > 0 && (
+                <div className="detail-gallery-block">
+                  <h2 className="detail-gallery-title">Sejarah &amp; Asal-usul</h2>
+                  <div className="detail-narrative">
+                    {historyParagraphs.map((paragraph, idx) => (
+                      <p key={idx}>{paragraph}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Gallery List */}
               <div className="detail-gallery-block">
                 <h2 className="detail-gallery-title">Galeri Visual Tradisi</h2>
-                <div className="detail-gallery-grid">
-                  {galleryImages.map((img, idx) => (
-                    <div key={idx} className="detail-gallery-card" onClick={() => setActiveModalImage(img.src)}>
-                      <img src={img.src} alt={img.alt} />
-                    </div>
-                  ))}
-                </div>
+                {galleryImages.length > 0 ? (
+                  <div className="detail-gallery-grid">
+                    {galleryImages.map((img) => (
+                      <button
+                        type="button"
+                        key={img.src}
+                        className="detail-gallery-card"
+                        onClick={() => setActiveModalImage(img.src)}
+                        aria-label={`Perbesar ${img.alt}`}
+                        style={{ border: 'none', padding: 0 }}
+                      >
+                        <img src={img.src} alt={img.alt} loading="lazy" onError={onImageError} />
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="detail-gallery-empty">
+                    Belum ada foto dokumentasi untuk budaya ini. Punya foto?{' '}
+                    <Link to="/kontribusi">Bantu lengkapi lewat halaman Kontribusi</Link>.
+                  </p>
+                )}
               </div>
+
+              {source && (
+                <div className="detail-source">
+                  <span className="detail-source__label">Sumber Rujukan</span>
+                  <p className="detail-source__text">
+                    {source.text}
+                    {source.url && (
+                      <>
+                        {source.text && ' — '}
+                        <a href={source.url} target="_blank" rel="noreferrer noopener">
+                          {source.url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}
+                        </a>
+                      </>
+                    )}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Sidebar Fakta */}
@@ -216,15 +276,23 @@ export default function DetailPage() {
               <div className="detail-facts-card">
                 <h3 className="detail-facts-title">Fakta Menarik</h3>
                 <div className="detail-facts-list">
-                    <div className="detail-fact-item">
-                      <div className="detail-fact-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e59a28" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                  {[
+                    { headline: 'Asal Daerah', caption: `Warisan budaya dari ${regionTag}` },
+                    { headline: 'Kategori', caption: categoryTag },
+                    ...facts.map((fact, idx) => ({ headline: `Fakta ${idx + 1}`, caption: fact })),
+                  ]
+                    .filter((item) => item.caption)
+                    .map((item) => (
+                      <div className="detail-fact-item" key={item.headline}>
+                        <div className="detail-fact-icon">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e59a28" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                        </div>
+                        <div className="detail-fact-body">
+                          <h4 className="detail-fact-headline">{item.headline}</h4>
+                          <p className="detail-fact-caption">{item.caption}</p>
+                        </div>
                       </div>
-                      <div className="detail-fact-body">
-                        <h4 className="detail-fact-headline">Asal Daerah</h4>
-                        <p className="detail-fact-caption">Warisan budaya dari {regionTag}</p>
-                      </div>
-                    </div>
+                    ))}
                 </div>
               </div>
             </aside>
@@ -241,7 +309,12 @@ export default function DetailPage() {
               {relatedItems.map((item) => (
                 <article className="detail-related-card" key={item.id}>
                   <Link to={`/budaya/${item.slug}`} className="detail-related-card__media">
-                    <img src={getImageUrl(item.image)} alt={item.title} />
+                    <img
+                      src={resolveImageUrl(item.image, item.category)}
+                      alt={item.title}
+                      loading="lazy"
+                      onError={handleImageError(item.category)}
+                    />
                   </Link>
                   <div className="detail-related-card__body">
                     <div className="detail-related-card__tags">

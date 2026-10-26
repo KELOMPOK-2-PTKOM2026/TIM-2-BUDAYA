@@ -1,0 +1,98 @@
+/* ================= BADGE PERAN (dipakai di Navbar, Profil, Kontribusi) ================= */
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.role-badge--guest {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.role-badge--user {
+  background-color: #dff0ec;
+  color: #175344;
+}
+
+.role-badge--admin {
+  background-color: #fdf3ef;
+  color: #c4542e;
+}
+
+/* ================= KARTU PERBANDINGAN HAK AKSES ================= */
+.access-levels {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.access-level {
+  background-color: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-color, #ebe5dc);
+  border-radius: 12px;
+  padding: 1.25rem 1.25rem 1.35rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.access-level--current {
+  border-color: #c4542e;
+  box-shadow: 0 0 0 3px rgba(196, 84, 46, 0.1);
+}
+
+.access-level__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.access-level__you {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #c4542e;
+}
+
+.access-level__desc {
+  margin: 0 0 0.85rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary, #64748b);
+}
+
+.access-level__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.access-level__list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-primary, #23201c);
+}
+
+.access-level__list svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: #16a34a;
+}
+
+@media (max-width: 860px) {
+  .access-levels {
+    grid-template-columns: 1fr;
+  }
+}

@@ -242,71 +242,6 @@
   transform: translateY(0);
 }
 
-/* Auth Divider */
-.auth-divider {
-  display: flex;
-  align-items: center;
-  margin: 1.25rem 0;
-  color: #8c827a;
-  font-size: 0.8rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.auth-divider::before,
-.auth-divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid #e5e0d8;
-}
-
-.auth-divider::before {
-  margin-right: 0.75rem;
-}
-
-.auth-divider::after {
-  margin-left: 0.75rem;
-}
-
-/* Google Outline Button */
-.auth-btn-google {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  background-color: #ffffff;
-  color: #1f2937;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  padding: 0.75rem 1rem;
-  font-size: 0.925rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-}
-
-.auth-btn-google:hover {
-  background-color: #faf7f2;
-  border-color: #c4542e;
-  color: #15382b;
-  box-shadow: 0 4px 12px rgba(21, 56, 43, 0.08);
-  transform: translateY(-1px);
-}
-
-.auth-btn-google:active {
-  transform: translateY(0);
-}
-
-.auth-btn-google__icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
 /* Success Alert */
 .auth-success-alert {
   background-color: #ecfdf5;
@@ -471,6 +406,83 @@
   background-color: #fef2f2;
   color: #991b1b;
   border: 1px solid #fecaca;
+}
+
+/* ================= VALIDASI INLINE & PESAN KESALAHAN ================= */
+.auth-input--invalid,
+.auth-input--invalid:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.auth-field-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #b91c1c;
+  margin-top: 0.4rem;
+  line-height: 1.4;
+}
+
+.auth-pwd-strength--weak {
+  color: #dc2626;
+}
+
+.auth-pwd-strength--medium {
+  color: #d97706;
+}
+
+.auth-pwd-strength--strong {
+  color: #16a34a;
+}
+
+/* Banner status di atas form (rate limit, info akses, peringatan percobaan) */
+.auth-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+  border: 1px solid transparent;
+}
+
+.auth-banner svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.auth-banner__title {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+}
+
+.auth-banner--locked {
+  background-color: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.auth-banner--warning {
+  background-color: #fffbeb;
+  border-color: #fde68a;
+  color: #92400e;
+}
+
+.auth-banner--info {
+  background-color: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1e40af;
+}
+
+.auth-banner__countdown {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
 }
 
 /* ================= RESPONSIVE ================= */

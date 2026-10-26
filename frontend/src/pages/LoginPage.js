@@ -1,18 +1,50 @@
 import { useState, useEffect, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import AlertModal from '../components/AlertModal';
 import api from '../lib/api';
+import { getApiErrorMessage, getFieldErrors, getRetryAfterSeconds, formatDuration } from '../lib/errors';
+import {
+  MAX_LOGIN_ATTEMPTS,
+  getLockRemaining,
+  getRemainingAttempts,
+  registerFailedAttempt,
+  lockFor,
+  resetLoginThrottle,
+} from '../lib/loginThrottle';
 import '../styles/Auth.css';
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const DEFAULT_SERVER_LOCK = 2 * 60;
+
+const formatCountdown = (seconds) => {
+  const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const ss = String(seconds % 60).padStart(2, '0');
+  return `${mm}:${ss}`;
+};
+
+const ErrorIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="10" />
+    <line x1="12" y1="8" x2="12" y2="12" />
+    <line x1="12" y1="16" x2="12.01" y2="16" />
+  </svg>
+);
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [formError, setFormError] = useState('');
+  const [lockRemaining, setLockRemaining] = useState(() => getLockRemaining());
+  const [lockDuration, setLockDuration] = useState(0);
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,
     type: 'warning',
@@ -22,6 +54,10 @@ export default function LoginPage() {
     confirmText: 'Saya Mengerti',
   });
 
+  // Info dari ProtectedRoute: halaman tujuan & alasan pengguna diarahkan ke sini
+  const redirectTo = location.state?.from || '/';
+  const accessReason = location.state?.reason;
+
   const showAlert = (config) => {
     setModalConfig({
       isOpen: true,
@@ -30,6 +66,8 @@ export default function LoginPage() {
       eyebrow: config.eyebrow || 'Perhatian',
       message: config.message,
       confirmText: config.confirmText || 'Saya Mengerti',
+      secondaryText: config.secondaryText,
+      onSecondary: config.onSecondary,
     });
   };
 
@@ -41,87 +79,153 @@ export default function LoginPage() {
     window.scrollTo(0, 0);
     document.title = 'Masuk ke Akun — JelajahSumatera';
 
+    // Hasil klik tautan verifikasi email dari backend: ?verified=1 | ?verified=already | ?error=...
     const params = new URLSearchParams(window.location.search);
-    const tokenParam = params.get('token');
-    if (tokenParam) {
-      const userData = {
-        id: params.get('id') || '',
-        name: params.get('name') || '',
-        email: params.get('email') || '',
-        role: params.get('role') || 'user',
-      };
-      login(userData, tokenParam);
-      setSubmitted(true);
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
-      return;
-    }
-
     const verifiedParam = params.get('verified');
+    const errorParam = params.get('error');
+
     if (verifiedParam === '1') {
       showAlert({
         type: 'success',
         eyebrow: 'Verifikasi Berhasil',
         title: 'Email Terverifikasi',
-        message: 'Email Anda berhasil diverifikasi. Silakan masuk ke akun Anda.',
-        confirmText: 'Lanjutkan',
+        message: 'Akun Anda sudah aktif. Silakan masuk menggunakan email dan password yang Anda daftarkan untuk mulai mengajukan budaya.',
+        confirmText: 'Masuk Sekarang',
       });
     } else if (verifiedParam === 'already') {
       showAlert({
         type: 'info',
         eyebrow: 'Informasi',
-        title: 'Sudah Terverifikasi',
-        message: 'Email Anda sudah terverifikasi sebelumnya. Silakan masuk ke akun Anda.',
+        title: 'Email Sudah Terverifikasi',
+        message: 'Tautan ini sudah pernah digunakan dan akun Anda sudah aktif. Anda tidak perlu memverifikasi ulang, silakan langsung masuk.',
         confirmText: 'Lanjutkan',
       });
-    }
-
-    const errorParam = params.get('error');
-    if (errorParam) {
+    } else if (errorParam) {
       showAlert({
         type: 'error',
-        eyebrow: 'Pemberitahuan',
-        title: 'Verifikasi / Masuk Gagal',
-        message: errorParam,
+        eyebrow: 'Verifikasi Gagal',
+        title: 'Tautan Verifikasi Tidak Valid',
+        message: `${errorParam} Tautan mungkin sudah kedaluwarsa atau tidak lengkap saat disalin. Coba masuk dengan akun Anda — jika email belum terverifikasi, Anda dapat meminta tautan baru.`,
         confirmText: 'Saya Mengerti',
       });
     }
-  }, [login, navigate]);
 
-  const handleGoogleLogin = () => {
-    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
-    window.location.href = `${apiBaseUrl}/auth/google/redirect`;
+    // Bersihkan query agar pop-up tidak muncul lagi saat halaman dimuat ulang
+    if (verifiedParam || errorParam) {
+      window.history.replaceState(window.history.state, '', window.location.pathname);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Hitung mundur penguncian login
+  useEffect(() => {
+    if (lockRemaining <= 0) return;
+    const timer = setInterval(() => {
+      const remaining = getLockRemaining();
+      setLockRemaining(remaining);
+      if (remaining <= 0) setFormError('');
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [lockRemaining]);
+
+  const isLocked = lockRemaining > 0;
+
+  const startLock = (seconds) => {
+    setLockDuration(seconds);
+    setLockRemaining(seconds);
+    setFormError('');
+  };
+
+  const handleResendVerification = async () => {
+    closeModal();
+    try {
+      const { data } = await api.post('/email/resend-verification', { email });
+      showAlert({
+        type: 'success',
+        eyebrow: 'Tautan Terkirim',
+        title: 'Cek Kotak Masuk Anda',
+        message: `${data.message || 'Tautan verifikasi baru telah dikirim.'} Periksa juga folder Spam atau Promosi jika email belum muncul.`,
+        confirmText: 'Baik',
+      });
+    } catch (error) {
+      const alreadyVerified = error.response?.status === 400;
+      showAlert({
+        type: alreadyVerified ? 'info' : 'error',
+        eyebrow: alreadyVerified ? 'Informasi' : 'Pengiriman Gagal',
+        title: alreadyVerified ? 'Email Sudah Terverifikasi' : 'Tautan Gagal Dikirim',
+        message: getApiErrorMessage(error, 'Gagal mengirim ulang tautan verifikasi. Silakan coba sesaat lagi.'),
+        confirmText: 'Tutup',
+      });
+    }
+  };
+
+  const validate = () => {
+    const errors = {};
+    if (!email.trim()) {
+      errors.email = 'Alamat email wajib diisi.';
+    } else if (!EMAIL_PATTERN.test(email.trim())) {
+      errors.email = 'Format email tidak valid. Contoh: budi@email.com';
+    }
+    if (!password) {
+      errors.password = 'Password wajib diisi.';
+    }
+    return errors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      showAlert({
-        type: 'warning',
-        eyebrow: 'Kelengkapan Data',
-        title: 'Formulir Belum Lengkap',
-        message: 'Mohon isi alamat email dan password Anda untuk masuk ke akun.',
-        confirmText: 'Lengkapi Data',
-      });
-      return;
-    }
+    if (isLocked || loading) return;
 
+    const errors = validate();
+    setFieldErrors(errors);
+    setFormError('');
+    if (Object.keys(errors).length > 0) return;
+
+    setLoading(true);
     try {
-      const { data } = await api.post('/login', { email, password });
+      const { data } = await api.post('/login', { email: email.trim(), password });
+      resetLoginThrottle();
       login(data.user, data.token);
       setSubmitted(true);
       setTimeout(() => {
-        navigate('/');
+        navigate(redirectTo, { replace: true });
       }, 1200);
     } catch (error) {
-      showAlert({
-        type: 'error',
-        eyebrow: 'Autentikasi Gagal',
-        title: 'Gagal Masuk Akun',
-        message: error.response?.data?.message || 'Login gagal. Periksa kembali alamat email dan password Anda.',
-        confirmText: 'Coba Lagi',
-      });
+      const status = error.response?.status;
+      const serverFieldErrors = getFieldErrors(error);
+      const emailMessage = serverFieldErrors.email || '';
+
+      if (status === 429) {
+        const seconds = getRetryAfterSeconds(error) || DEFAULT_SERVER_LOCK;
+        lockFor(seconds);
+        startLock(seconds);
+      } else if (status === 422 && /belum diverifikasi/i.test(emailMessage)) {
+        showAlert({
+          type: 'warning',
+          eyebrow: 'Akun Belum Aktif',
+          title: 'Email Belum Diverifikasi',
+          message: `Akun ${email.trim()} belum diverifikasi. Klik tautan verifikasi yang kami kirim ke email Anda (cek juga folder Spam), atau minta tautan baru di bawah ini.`,
+          confirmText: 'Tutup',
+          secondaryText: 'Kirim Ulang Tautan',
+          onSecondary: handleResendVerification,
+        });
+      } else if (status === 422 && !serverFieldErrors.password && /kredensial/i.test(emailMessage)) {
+        const lockSeconds = registerFailedAttempt();
+        if (lockSeconds > 0) {
+          startLock(lockSeconds);
+        } else {
+          const remaining = getRemainingAttempts();
+          setFormError(
+            `Email atau password yang Anda masukkan salah. Sisa percobaan: ${remaining} dari ${MAX_LOGIN_ATTEMPTS} sebelum akses masuk dibatasi sementara.`
+          );
+        }
+      } else if (status === 422) {
+        setFieldErrors(serverFieldErrors);
+      } else {
+        setFormError(getApiErrorMessage(error, 'Login gagal. Silakan coba lagi.'));
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -148,11 +252,59 @@ export default function LoginPage() {
 
         {submitted && (
           <div className="auth-success-alert">
-            Verifikasi berhasil! Mengalihkan ke halaman utama...
+            Berhasil masuk! Mengalihkan Anda...
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        {accessReason && !submitted && !isLocked && (
+          <div className="auth-banner auth-banner--info" role="status">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <div>
+              <span className="auth-banner__title">Khusus Pengguna Terdaftar</span>
+              {accessReason}
+            </div>
+          </div>
+        )}
+
+        {isLocked && (
+          <div className="auth-banner auth-banner--locked" role="alert">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <div>
+              <span className="auth-banner__title">Percobaan Masuk Dibatasi Sementara</span>
+              Terlalu banyak percobaan masuk yang gagal. Demi keamanan akun, silakan tunggu
+              {lockDuration > 0 ? ` ${formatDuration(lockDuration)}` : ''} sebelum mencoba lagi.
+              <br />
+              Coba lagi dalam{' '}
+              <span className="auth-banner__countdown" aria-live="polite">
+                {formatCountdown(lockRemaining)}
+              </span>
+              . Lupa password?{' '}
+              <Link to="/lupa-password" className="auth-link">Atur ulang di sini</Link>.
+            </div>
+          </div>
+        )}
+
+        {formError && !isLocked && (
+          <div className="auth-banner auth-banner--warning" role="alert">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            <div>
+              <span className="auth-banner__title">Gagal Masuk</span>
+              {formError}
+            </div>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="auth-form" noValidate>
           {/* Email */}
           <div className="auth-field">
             <label htmlFor="login-email" className="auth-label">
@@ -162,11 +314,23 @@ export default function LoginPage() {
               type="email"
               id="login-email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setFieldErrors((prev) => ({ ...prev, email: undefined }));
+              }}
               placeholder="cth. budi@email.com"
-              required
-              className="auth-input"
+              className={`auth-input ${fieldErrors.email ? 'auth-input--invalid' : ''}`}
+              aria-invalid={Boolean(fieldErrors.email)}
+              aria-describedby={fieldErrors.email ? 'login-email-error' : undefined}
+              disabled={isLocked}
+              autoComplete="email"
             />
+            {fieldErrors.email && (
+              <span id="login-email-error" className="auth-field-error">
+                <ErrorIcon />
+                {fieldErrors.email}
+              </span>
+            )}
           </div>
 
           {/* Password */}
@@ -184,10 +348,16 @@ export default function LoginPage() {
                 type={showPassword ? 'text' : 'password'}
                 id="login-password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setFieldErrors((prev) => ({ ...prev, password: undefined }));
+                }}
                 placeholder="Masukkan password Anda"
-                required
-                className="auth-input auth-input--with-icon"
+                className={`auth-input auth-input--with-icon ${fieldErrors.password ? 'auth-input--invalid' : ''}`}
+                aria-invalid={Boolean(fieldErrors.password)}
+                aria-describedby={fieldErrors.password ? 'login-password-error' : undefined}
+                disabled={isLocked}
+                autoComplete="current-password"
               />
               <button
                 type="button"
@@ -208,6 +378,12 @@ export default function LoginPage() {
                 )}
               </button>
             </div>
+            {fieldErrors.password && (
+              <span id="login-password-error" className="auth-field-error">
+                <ErrorIcon />
+                {fieldErrors.password}
+              </span>
+            )}
           </div>
 
           {/* Ingat Saya */}
@@ -225,39 +401,12 @@ export default function LoginPage() {
           </div>
 
           {/* Tombol Masuk */}
-          <button type="submit" className="auth-btn-primary">
-            Masuk Sekarang
-          </button>
-
-          <div className="auth-divider">atau</div>
-
-          {/* Tombol Masuk dengan Google */}
-          <button
-            type="button"
-            className="auth-btn-google"
-            onClick={handleGoogleLogin}
-          >
-            <span className="auth-btn-google__icon">
-              <svg width="18" height="18" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-                />
-              </svg>
-            </span>
-            <span>Masuk dengan Google</span>
+          <button type="submit" className="auth-btn-primary" disabled={isLocked || loading || submitted}>
+            {isLocked
+              ? `Coba Lagi dalam ${formatCountdown(lockRemaining)}`
+              : loading
+              ? 'Memeriksa Akun...'
+              : 'Masuk Sekarang'}
           </button>
         </form>
 
@@ -279,6 +428,8 @@ export default function LoginPage() {
         eyebrow={modalConfig.eyebrow}
         message={modalConfig.message}
         confirmText={modalConfig.confirmText}
+        secondaryText={modalConfig.secondaryText}
+        onSecondary={modalConfig.onSecondary}
       />
     </div>
   );

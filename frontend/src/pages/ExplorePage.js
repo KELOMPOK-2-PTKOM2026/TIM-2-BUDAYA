@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import api from '../lib/api';
+import { getApiErrorMessage } from '../lib/errors';
+import { resolveImageUrl, handleImageError } from '../lib/media';
 import '../styles/ExplorePage.css';
-
-// Gunakan prefix Storage Laravel dari environment variable
-const STORAGE_URL = process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/';
 
 export default function ExplorePage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -98,7 +97,7 @@ export default function ExplorePage() {
         setTotalItems(responseData.total || 0);
       } catch (err) {
         console.error('Fetch error:', err);
-        setError('Gagal memuat data budaya. Pastikan server backend berjalan.');
+        setError(`Gagal memuat data budaya. ${getApiErrorMessage(err)}`);
       } finally {
         setLoading(false);
       }
@@ -149,13 +148,6 @@ export default function ExplorePage() {
     if (page < 1 || page > totalPages || page === currentPage) return;
     setCurrentPage(page);
     window.scrollTo({ top: 120, behavior: 'smooth' });
-  };
-
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return '/images/dummy-budaya.svg';
-    if (imagePath.startsWith('http')) return imagePath;
-    if (imagePath.startsWith('/images/')) return imagePath;
-    return `${STORAGE_URL}${imagePath}`;
   };
 
   return (
@@ -263,14 +255,11 @@ export default function ExplorePage() {
                 <Link to={`/budaya/${item.slug}`} className="explore-card__media-link">
                   <div className="explore-card__image-wrap">
                     <img
-                      src={getImageUrl(item.image)}
+                      src={resolveImageUrl(item.image, item.category)}
                       alt={item.title}
                       className="explore-card__img"
                       loading="lazy"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = '/images/dummy-budaya.svg';
-                      }}
+                      onError={handleImageError(item.category)}
                     />
                   </div>
                 </Link>

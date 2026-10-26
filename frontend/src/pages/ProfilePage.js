@@ -3,7 +3,10 @@ import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../lib/api';
+import { getApiErrorMessage } from '../lib/errors';
+import { getAccessLevel } from '../lib/roles';
 import '../styles/ProfilePage.css';
+import '../styles/AccessLevels.css';
 
 const statusLabels = {
   pending: 'Menunggu verifikasi',
@@ -17,6 +20,7 @@ export default function ProfilePage() {
   const [proposals, setProposals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const access = getAccessLevel(user);
 
   useEffect(() => {
     if (!user) {
@@ -41,7 +45,7 @@ export default function ProfilePage() {
         if (err.response?.status === 401) {
           setError('Sesi telah berakhir atau tidak valid. Silakan masuk kembali.');
         } else {
-          setError(err.response?.data?.message || 'Gagal memuat riwayat ajuan budaya.');
+          setError(getApiErrorMessage(err, 'Gagal memuat riwayat ajuan budaya.'));
         }
       })
       .finally(() => {
@@ -82,8 +86,22 @@ export default function ProfilePage() {
               <div className="profile-info-value">{user?.email}</div>
             </div>
             <div className="profile-info-group">
-              <span className="profile-info-label">Role</span>
-              <div className="profile-info-value">{user?.role}</div>
+              <span className="profile-info-label">Hak Akses</span>
+              <div className="profile-info-value">
+                <span className={`role-badge role-badge--${access.key}`}>
+                  {access.label}
+                </span>
+                <ul className="access-level__list" style={{ marginTop: '0.75rem' }}>
+                  {access.permissions.map((permission) => (
+                    <li key={permission}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      {permission}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
 
@@ -113,7 +131,10 @@ export default function ProfilePage() {
                   )}
                 </div>
               ) : proposals.length === 0 ? (
-                <p>Belum ada ajuan budaya.</p>
+                <p>
+                  Belum ada ajuan budaya.{' '}
+                  <Link to="/kontribusi" style={{ color: '#C4542E', fontWeight: 600 }}>Ajukan budaya pertama Anda &rarr;</Link>
+                </p>
               ) : (
                 proposals.map((proposal) => (
                   <article className="proposal-item" key={proposal.id}>

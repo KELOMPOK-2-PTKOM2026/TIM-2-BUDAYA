@@ -43,14 +43,8 @@ function App() {
               <Route path="/eksplorasi" element={<ExplorePage />} />
               <Route path="/budaya/:slug" element={<DetailPage />} />
               <Route path="/tentang" element={<AboutPage />} />
-              <Route
-                path="/kontribusi"
-                element={
-                  <ProtectedRoute>
-                    <ContributionPage />
-                  </ProtectedRoute>
-                }
-              />
+              {/* Tidak diproteksi: pengunjung melihat penjelasan hak akses, kontributor melihat form */}
+              <Route path="/kontribusi" element={<ContributionPage />} />
               <Route path="/kontak" element={<ContributionPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/masuk" element={<LoginPage />} />
@@ -62,7 +56,7 @@ function App() {
               <Route
                 path="/profil"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute reason="Masuk untuk melihat profil dan riwayat ajuan budaya Anda.">
                     <ProfilePage />
                   </ProtectedRoute>
                 }
@@ -70,7 +64,7 @@ function App() {
               <Route
                 path="/admin"
                 element={
-                  <ProtectedRoute requireAdmin={true}>
+                  <ProtectedRoute requireAdmin={true} reason="Panel admin hanya dapat diakses oleh akun Admin.">
                     <AdminPage />
                   </ProtectedRoute>
                 }

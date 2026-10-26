@@ -66,8 +66,9 @@ const Hero = () => {
     setCurrentIndex(index);
   };
 
+  // Slide hero butuh foto asli; ilustrasi dummy diganti foto hero default
   const getImageUrl = (imagePath) => {
-    if (!imagePath) return heroImage;
+    if (!imagePath || /\/images\/dummy-[a-z]+\.svg$/.test(imagePath)) return heroImage;
     if (imagePath.startsWith('http')) return imagePath;
     if (imagePath.startsWith('/images/')) return imagePath;
     return `${STORAGE_URL}${imagePath}`;

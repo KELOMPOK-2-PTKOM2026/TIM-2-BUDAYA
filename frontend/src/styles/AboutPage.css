@@ -95,41 +95,9 @@
   margin: 0;
 }
 
-/* ================= STATS COUNTER BAR ================= */
-.about-stats {
-  background-color: #0f3328;
-  padding: 3.75rem 0;
-}
-
-.about-stats__grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
-  text-align: center;
-}
-
-.about-stats__item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.about-stats__value {
-  font-family: 'EB Garamond', Georgia, serif;
-  font-size: 3.15rem;
-  font-weight: 600;
-  color: #e5a83b;
-  line-height: 1;
-  margin-bottom: 0.65rem;
-  letter-spacing: -0.02em;
-}
-
-.about-stats__label {
-  font-size: 0.925rem;
-  font-weight: 400;
-  color: #d1ded9;
-  letter-spacing: 0.01em;
+/* ================= HAK AKSES PENGGUNA ================= */
+.about-access {
+  padding: 4.5rem 0 1rem;
 }
 
 /* ================= TONGGAK SEJARAH PLATFORM ================= */
@@ -221,11 +189,6 @@
   .about-vm__grid {
     gap: 3rem;
   }
-
-  .about-stats__grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2.5rem;
-  }
 }
 
 @media (max-width: 768px) {
@@ -269,15 +232,8 @@
   .about-milestones__year {
     font-size: 1.85rem;
   }
-}
 
-@media (max-width: 480px) {
-  .about-stats__grid {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .about-stats__value {
-    font-size: 2.65rem;
+  .about-access {
+    padding: 3rem 0 0.5rem;
   }
 }

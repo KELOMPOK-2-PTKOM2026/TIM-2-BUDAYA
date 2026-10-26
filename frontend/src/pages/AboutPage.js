@@ -1,8 +1,13 @@
-import { useEffect } from 'react';
-import { aboutStats, aboutMilestones } from '../data/Mock';
+import { useContext, useEffect } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { aboutMilestones } from '../data/Mock';
+import AccessLevels from '../components/AccessLevels';
+import { getAccessLevel } from '../lib/roles';
 import '../styles/AboutPage.css';
 
 export default function AboutPage() {
+  const { user } = useContext(AuthContext);
+
   useEffect(() => {
     window.scrollTo(0, 0);
     document.title = 'Tentang JelajahSumatera — Mengenal Platform Kami';
@@ -57,17 +62,18 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ================= STATS COUNTER BAR ================= */}
-      <section className="about-stats">
+      {/* ================= HAK AKSES PENGGUNA ================= */}
+      <section className="about-access">
         <div className="container-wide">
-          <div className="about-stats__grid">
-            {aboutStats.map((item, index) => (
-              <div key={index} className="about-stats__item">
-                <div className="about-stats__value">{item.value}</div>
-                <div className="about-stats__label">{item.label}</div>
-              </div>
-            ))}
+          <div className="about-milestones__header">
+            <span className="about-milestones__eyebrow">
+              HAK AKSES PENGGUNA
+            </span>
+            <h2 className="about-milestones__title">
+              Siapa Bisa Melakukan Apa?
+            </h2>
           </div>
+          <AccessLevels currentKey={getAccessLevel(user).key} />
         </div>
       </section>
 

@@ -3,7 +3,65 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import AlertModal from '../components/AlertModal';
 import api from '../lib/api';
+import { getApiErrorMessage, getFieldErrors } from '../lib/errors';
 import '../styles/Auth.css';
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const NAME_MIN = 3;
+const NAME_MAX = 255;
+const PASSWORD_MIN = 8;
+
+// Nama kolom form -> nama kolom yang dipakai backend
+const SERVER_FIELD_MAP = { password_confirmation: 'confirmPassword' };
+
+function getPasswordStrength(password) {
+  if (!password) return null;
+  let score = 0;
+  if (password.length >= PASSWORD_MIN) score += 1;
+  if (password.length >= 12) score += 1;
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
+  if (/\d/.test(password)) score += 1;
+  if (/[^A-Za-z0-9]/.test(password)) score += 1;
+
+  if (password.length < PASSWORD_MIN || score <= 2) return { level: 'weak', label: 'Lemah' };
+  if (score === 3) return { level: 'medium', label: 'Sedang' };
+  return { level: 'strong', label: 'Kuat' };
+}
+
+function validateRegister(formData) {
+  const errors = {};
+  const name = formData.name.trim();
+  const email = formData.email.trim();
+
+  if (!name) errors.name = 'Nama lengkap wajib diisi.';
+  else if (name.length < NAME_MIN) errors.name = `Nama lengkap minimal ${NAME_MIN} karakter.`;
+  else if (name.length > NAME_MAX) errors.name = `Nama lengkap maksimal ${NAME_MAX} karakter.`;
+
+  if (!email) errors.email = 'Alamat email wajib diisi.';
+  else if (!EMAIL_PATTERN.test(email)) errors.email = 'Format email tidak valid. Contoh: budi@email.com';
+
+  if (!formData.password) errors.password = 'Password wajib diisi.';
+  else if (formData.password.length < PASSWORD_MIN) errors.password = `Password minimal ${PASSWORD_MIN} karakter.`;
+
+  if (!formData.confirmPassword) errors.confirmPassword = 'Konfirmasi password wajib diisi.';
+  else if (formData.password !== formData.confirmPassword) errors.confirmPassword = 'Konfirmasi password tidak cocok dengan password.';
+
+  if (!formData.agreed) errors.agreed = 'Anda harus menyetujui Syarat & Ketentuan serta Kebijakan Privasi.';
+
+  return errors;
+}
+
+const FieldError = ({ id, message }) =>
+  message ? (
+    <span id={id} className="auth-field-error">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      {message}
+    </span>
+  ) : null;
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -24,6 +82,7 @@ export default function RegisterPage() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resendLoading, setResendLoading] = useState(false);
   const [resendStatus, setResendStatus] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,
@@ -42,6 +101,8 @@ export default function RegisterPage() {
       eyebrow: config.eyebrow || 'Perhatian',
       message: config.message,
       confirmText: config.confirmText || 'Saya Mengerti',
+      secondaryText: config.secondaryText,
+      onSecondary: config.onSecondary,
     });
   };
 
@@ -68,12 +129,13 @@ export default function RegisterPage() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
+    setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
-  const handleGoogleLogin = () => {
-    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
-    window.location.href = `${apiBaseUrl}/auth/google/redirect`;
-  };
+  const inputClass = (field, extra = '') =>
+    `auth-input ${extra} ${fieldErrors[field] ? 'auth-input--invalid' : ''}`.trim();
+
+  const passwordStrength = getPasswordStrength(formData.password);
 
   const handleResendVerification = async () => {
     if (resendCooldown > 0 || resendLoading) return;
@@ -89,12 +151,22 @@ export default function RegisterPage() {
       });
       setResendCooldown(60);
     } catch (error) {
-      const msg =
-        error.response?.data?.message ||
-        'Gagal mengirim ulang tautan verifikasi. Silakan coba sesaat lagi.';
+      if (error.response?.status === 400) {
+        // Email sudah diverifikasi (mis. lewat perangkat lain) — arahkan langsung ke login
+        showAlert({
+          type: 'info',
+          eyebrow: 'Informasi',
+          title: 'Email Sudah Terverifikasi',
+          message: 'Akun Anda sudah aktif, tidak perlu mengirim ulang tautan. Silakan masuk ke akun Anda.',
+          confirmText: 'Tutup',
+          secondaryText: 'Ke Halaman Masuk',
+          onSecondary: () => navigate('/login'),
+        });
+        return;
+      }
       setResendStatus({
         type: 'error',
-        message: msg,
+        message: getApiErrorMessage(error, 'Gagal mengirim ulang tautan verifikasi. Silakan coba sesaat lagi.'),
       });
     } finally {
       setResendLoading(false);
@@ -108,32 +180,17 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.agreed) {
-      showAlert({
-        type: 'warning',
-        eyebrow: 'Persetujuan Diperlukan',
-        title: 'Syarat & Ketentuan Belum Disetujui',
-        message: 'Mohon setujui Syarat & Ketentuan serta Kebijakan Privasi dengan mencentang kotak persetujuan sebelum melanjutkan pendaftaran.',
-        confirmText: 'Saya Mengerti',
-      });
-      return;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      showAlert({
-        type: 'error',
-        eyebrow: 'Verifikasi Password',
-        title: 'Konfirmasi Password Tidak Cocok',
-        message: 'Password dan konfirmasi password tidak cocok. Silakan pastikan kedua kolom password terisi sama persis.',
-        confirmText: 'Periksa Kembali',
-      });
-      return;
-    }
+    if (loading) return;
+
+    const errors = validateRegister(formData);
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
 
     setLoading(true);
     try {
       const { data } = await api.post('/register', {
-        name: formData.name,
-        email: formData.email,
+        name: formData.name.trim(),
+        email: formData.email.trim(),
         password: formData.password,
         password_confirmation: formData.confirmPassword,
       });
@@ -144,20 +201,38 @@ export default function RegisterPage() {
           navigate('/');
         }, 1500);
       } else {
-        setRegisteredEmail(formData.email);
+        setRegisteredEmail(formData.email.trim());
         setIsRegistered(true);
         setResendCooldown(60);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } catch (error) {
-      const msg = error.response?.data?.message || 'Pendaftaran gagal. Silakan coba lagi.';
-      showAlert({
-        type: 'error',
-        eyebrow: 'Pendaftaran Akun',
-        title: 'Pendaftaran Gagal Diproses',
-        message: msg,
-        confirmText: 'Tutup',
-      });
+      const serverErrors = getFieldErrors(error);
+
+      if (error.response?.status === 422 && /sudah terdaftar/i.test(serverErrors.email || '')) {
+        showAlert({
+          type: 'info',
+          eyebrow: 'Akun Sudah Ada',
+          title: 'Email Sudah Terdaftar',
+          message: `Email ${formData.email.trim()} sudah terdaftar dan terverifikasi. Silakan masuk, atau gunakan fitur Lupa Password jika Anda tidak ingat password-nya.`,
+          confirmText: 'Tutup',
+          secondaryText: 'Ke Halaman Masuk',
+          onSecondary: () => navigate('/login'),
+        });
+      } else if (error.response?.status === 422 && Object.keys(serverErrors).length > 0) {
+        const mapped = Object.fromEntries(
+          Object.entries(serverErrors).map(([field, msg]) => [SERVER_FIELD_MAP[field] || field, msg])
+        );
+        setFieldErrors(mapped);
+      } else {
+        showAlert({
+          type: 'error',
+          eyebrow: 'Pendaftaran Akun',
+          title: 'Pendaftaran Gagal Diproses',
+          message: getApiErrorMessage(error, 'Pendaftaran gagal. Silakan coba lagi.'),
+          confirmText: 'Tutup',
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -310,7 +385,7 @@ export default function RegisterPage() {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="auth-form">
+            <form onSubmit={handleSubmit} className="auth-form" noValidate>
               {/* Nama Lengkap */}
               <div className="auth-field">
                 <label htmlFor="reg-name" className="auth-label">
@@ -323,9 +398,13 @@ export default function RegisterPage() {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="cth. Budi Siregar"
-                  required
-                  className="auth-input"
+                  maxLength={NAME_MAX}
+                  className={inputClass('name')}
+                  aria-invalid={Boolean(fieldErrors.name)}
+                  aria-describedby={fieldErrors.name ? 'reg-name-error' : undefined}
+                  autoComplete="name"
                 />
+                <FieldError id="reg-name-error" message={fieldErrors.name} />
               </div>
 
               {/* Alamat Email */}
@@ -340,9 +419,12 @@ export default function RegisterPage() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="cth. budi@email.com"
-                  required
-                  className="auth-input"
+                  className={inputClass('email')}
+                  aria-invalid={Boolean(fieldErrors.email)}
+                  aria-describedby={fieldErrors.email ? 'reg-email-error' : undefined}
+                  autoComplete="email"
                 />
+                <FieldError id="reg-email-error" message={fieldErrors.email} />
               </div>
 
               {/* Password */}
@@ -357,9 +439,11 @@ export default function RegisterPage() {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="Masukkan password"
-                    required
-                    className="auth-input auth-input--with-icon"
+                    placeholder={`Minimal ${PASSWORD_MIN} karakter`}
+                    className={inputClass('password', 'auth-input--with-icon')}
+                    aria-invalid={Boolean(fieldErrors.password)}
+                    aria-describedby={fieldErrors.password ? 'reg-password-error' : undefined}
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"
@@ -398,9 +482,13 @@ export default function RegisterPage() {
                     )}
                   </button>
                 </div>
-                <span className="auth-pwd-strength">
-                  Kekuatan Password: Sangat Kuat
-                </span>
+                {fieldErrors.password ? (
+                  <FieldError id="reg-password-error" message={fieldErrors.password} />
+                ) : passwordStrength ? (
+                  <span className={`auth-pwd-strength auth-pwd-strength--${passwordStrength.level}`}>
+                    Kekuatan Password: {passwordStrength.label}
+                  </span>
+                ) : null}
               </div>
 
               {/* Konfirmasi Password */}
@@ -416,8 +504,10 @@ export default function RegisterPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     placeholder="Ulangi password"
-                    required
-                    className="auth-input auth-input--with-icon"
+                    className={inputClass('confirmPassword', 'auth-input--with-icon')}
+                    aria-invalid={Boolean(fieldErrors.confirmPassword)}
+                    aria-describedby={fieldErrors.confirmPassword ? 'reg-confirm-error' : undefined}
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"
@@ -456,6 +546,7 @@ export default function RegisterPage() {
                     )}
                   </button>
                 </div>
+                <FieldError id="reg-confirm-error" message={fieldErrors.confirmPassword} />
               </div>
 
               {/* Persetujuan */}
@@ -480,6 +571,7 @@ export default function RegisterPage() {
                   .
                 </label>
               </div>
+              <FieldError id="reg-terms-error" message={fieldErrors.agreed} />
 
               {/* Tombol Daftar */}
               <button
@@ -488,37 +580,6 @@ export default function RegisterPage() {
                 disabled={loading}
               >
                 {loading ? 'Memproses Pendaftaran...' : 'Daftar Sekarang'}
-              </button>
-
-              <div className="auth-divider">atau</div>
-
-              {/* Tombol Masuk dengan Google */}
-              <button
-                type="button"
-                className="auth-btn-google"
-                onClick={handleGoogleLogin}
-              >
-                <span className="auth-btn-google__icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24">
-                    <path
-                      fill="#4285F4"
-                      d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
-                    />
-                    <path
-                      fill="#34A853"
-                      d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
-                    />
-                    <path
-                      fill="#FBBC05"
-                      d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
-                    />
-                    <path
-                      fill="#EA4335"
-                      d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-                    />
-                  </svg>
-                </span>
-                <span>Daftar dengan Google</span>
               </button>
             </form>
 
@@ -542,6 +603,8 @@ export default function RegisterPage() {
         eyebrow={modalConfig.eyebrow}
         message={modalConfig.message}
         confirmText={modalConfig.confirmText}
+        secondaryText={modalConfig.secondaryText}
+        onSecondary={modalConfig.onSecondary}
       />
     </div>
   );
