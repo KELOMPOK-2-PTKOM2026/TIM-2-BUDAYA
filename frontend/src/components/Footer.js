@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import logoImg from '../images/logo.png';
 import '../styles/Footer.css';
 
 export default function Footer() {
@@ -11,12 +12,7 @@ export default function Footer() {
             <div className="footer__brand-block">
               <div className="footer__brand">
                 <div className="footer__logo">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E5A83B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                    <path d="M7 8h10" />
-                    <path d="M12 8v8" />
-                    <path d="M9 16h6" />
-                  </svg>
+                  <img src={logoImg} alt="Logo Jelajah Sumatera" className="footer__logo-img" />
                 </div>
                 <span className="footer__brand-text">
                   Jelajah<span className="footer__brand-bold">Sumatera</span>

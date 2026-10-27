@@ -42,14 +42,22 @@
 }
 
 .footer__logo {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.35rem;
-  background: #173b31;
-  border: 1px solid #e5a83b;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.footer__logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .footer__brand-text {

@@ -3,6 +3,7 @@ import { useState, useContext, useRef, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { getAccessLevel } from '../lib/roles';
+import logoImg from '../images/logo.png';
 import '../styles/Navbar.css';
 import '../styles/AccessLevels.css';
 
@@ -82,12 +83,7 @@ export default function Navbar({ theme = 'light', toggleTheme }) {
           {/* Brand */}
           <Link to="/" className="navbar__brand" onClick={closeMobile}>
             <div className="navbar__logo">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C4542E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                <path d="M7 8h10" />
-                <path d="M12 8v8" />
-                <path d="M9 16h6" />
-              </svg>
+              <img src={logoImg} alt="Logo Jelajah Sumatera" className="navbar__logo-img" />
             </div>
             <span className="navbar__brand-text">
               Jelajah<span className="navbar__brand-bold">Sumatera</span>
