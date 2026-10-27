@@ -117,15 +117,19 @@ class ProposalApiTest extends TestCase
             'status' => 'published',
         ]);
 
-        $res = $this->actingAs($admin)->putJson("/api/admin/cultures/{$culture->id}", [
-            'image' => '/images/new-image.jpg',
-            'desc' => 'Deskripsi diperbarui',
+        \Illuminate\Support\Facades\Storage::fake('public');
+        $file = \Illuminate\Http\UploadedFile::fake()->image('new-image.jpg');
+
+        $res = $this->actingAs($admin)->put("/api/admin/cultures/{$culture->id}", [
+            'image' => $file,
+            'desc'  => 'Deskripsi diperbarui',
+            'facts' => ['Fakta unik satu', 'Fakta unik dua'],
         ]);
 
         $res->assertOk();
         $this->assertDatabaseHas('cultures', [
-            'id' => $culture->id,
-            'image' => '/images/new-image.jpg',
+            'id'         => $culture->id,
+            'desc'       => 'Deskripsi diperbarui',
             'updated_by' => $admin->id,
         ]);
     }

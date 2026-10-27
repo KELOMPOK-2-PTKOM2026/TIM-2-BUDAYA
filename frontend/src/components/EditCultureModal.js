@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../lib/api';
+import { compressImage } from '../lib/media';
 
 const STORAGE_URL = process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/';
 
@@ -148,18 +149,31 @@ export default function EditCultureModal({
         submitData.append('source', formData.source);
       }
 
-      // JSON string array fakta
-      submitData.append('facts', JSON.stringify(facts));
-
-      // File gambar utama
-      if (imageFile) {
-        submitData.append('image', imageFile);
+      // Kirim array facts
+      if (facts && facts.length > 0) {
+        facts.forEach((fact, index) => {
+          submitData.append(`facts[${index}]`, fact);
+        });
+      } else {
+        // Opsional: kirim array kosong jika tidak ada fakta
+        submitData.append('facts', []);
       }
 
-      // Multiple files galeri
-      galleryFiles.forEach((file) => {
-        submitData.append('images_gallery[]', file);
-      });
+      // File gambar utama (dikompres sebelum dikirim)
+      if (imageFile) {
+        const compressedMain = await compressImage(imageFile);
+        submitData.append('image', compressedMain);
+      }
+
+      // Multiple files galeri (dikompres sebelum dikirim)
+      if (galleryFiles.length > 0) {
+        const compressedGallery = await Promise.all(
+          galleryFiles.map((file) => compressImage(file))
+        );
+        compressedGallery.forEach((file) => {
+          submitData.append('images_gallery[]', file);
+        });
+      }
 
       await api.post(`/admin/cultures/${cultureData.id}`, submitData);
 

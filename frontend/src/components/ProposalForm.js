@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import api from '../lib/api';
 import { getApiErrorMessage, getFieldErrors } from '../lib/errors';
+import { compressImage } from '../lib/media';
 import '../styles/ProposalForm.css';
 
 const emptyForm = {
@@ -184,7 +185,8 @@ export default function ProposalForm() {
       }
     });
     payload.append('status', status);
-    images.forEach((image) => payload.append('images[]', image));
+    const compressedImages = await Promise.all(images.map((image) => compressImage(image)));
+    compressedImages.forEach((image) => payload.append('images[]', image));
 
     try {
       await api.post('/proposals', payload);

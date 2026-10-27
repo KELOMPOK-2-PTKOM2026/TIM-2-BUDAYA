@@ -41,3 +41,85 @@ export function handleImageError(category) {
     event.currentTarget.src = getPlaceholder(category);
   };
 }
+
+/**
+ * Kompresi dan konversi gambar ke WebP sisi browser via HTML5 Canvas.
+ * WebP menghasilkan ukuran 25-35% lebih kecil dibanding JPEG pada kualitas setara, serta mendukung transparansi.
+ *
+ * ponytail: toBlob('image/webp') didukung semua browser modern. Browser lawas otomatis fallback ke format default.
+ */
+export function compressImage(
+  file,
+  { maxWidth = 1600, maxHeight = 1600, quality = 0.82, format = 'image/webp' } = {}
+) {
+  return new Promise((resolve) => {
+    if (
+      !file ||
+      typeof window === 'undefined' ||
+      !file.type ||
+      !file.type.startsWith('image/') ||
+      file.type === 'image/svg+xml' ||
+      file.type === 'image/gif'
+    ) {
+      return resolve(file);
+    }
+
+    // Lewati jika file sudah WebP dan ukurannya kecil (<= 250 KB)
+    if (file.type === 'image/webp' && file.size <= 250 * 1024) {
+      return resolve(file);
+    }
+
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      let { width, height } = img;
+
+      if (width > maxWidth || height > maxHeight) {
+        const ratio = Math.min(maxWidth / width, maxHeight / height);
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        return resolve(file);
+      }
+
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            return resolve(file);
+          }
+          if (blob.size >= file.size && file.type === 'image/webp') {
+            return resolve(file);
+          }
+          const isWebp = blob.type === 'image/webp';
+          const extension = isWebp ? '.webp' : '.jpg';
+          const newName = file.name.replace(/\.[^.]+$/, '') + extension;
+          const compressedFile = new File([blob], newName, {
+            type: blob.type || format,
+            lastModified: Date.now(),
+          });
+          resolve(compressedFile);
+        },
+        format,
+        quality
+      );
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve(file);
+    };
+
+    img.src = objectUrl;
+  });
+}
