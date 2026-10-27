@@ -1,6 +1,5 @@
 import { useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { aboutMilestones } from '../data/Mock';
 import AccessLevels from '../components/AccessLevels';
 import { getAccessLevel } from '../lib/roles';
 import StatBanner from '../components/StatBanner';
@@ -66,47 +65,15 @@ export default function AboutPage() {
       {/* ================= HAK AKSES PENGGUNA ================= */}
       <section className="about-access">
         <div className="container-wide">
-          <div className="about-milestones__header">
-            <span className="about-milestones__eyebrow">
+          <div className="about-access__header">
+            <span className="about-access__eyebrow">
               HAK AKSES PENGGUNA
             </span>
-            <h2 className="about-milestones__title">
+            <h2 className="about-access__title">
               Siapa Bisa Melakukan Apa?
             </h2>
           </div>
           <AccessLevels currentKey={getAccessLevel(user).key} />
-        </div>
-      </section>
-
-      {/* ================= TONGGAK SEJARAH PLATFORM ================= */}
-      <section className="about-milestones">
-        <div className="container-wide">
-          <div className="about-milestones__header">
-            <span className="about-milestones__eyebrow">
-              JEJAK LANGKAH
-            </span>
-            <h2 className="about-milestones__title">
-              Tonggak Sejarah Platform
-            </h2>
-          </div>
-
-          <div className="about-milestones__list">
-            {aboutMilestones.map((milestone) => (
-              <div key={milestone.year} className="about-milestones__card">
-                <div className="about-milestones__year">
-                  {milestone.year}
-                </div>
-                <div className="about-milestones__content">
-                  <div className="about-milestones__card-title">
-                    {milestone.title}
-                  </div>
-                  <p className="about-milestones__card-desc">
-                    {milestone.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 

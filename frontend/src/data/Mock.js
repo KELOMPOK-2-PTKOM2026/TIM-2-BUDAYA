@@ -829,28 +829,7 @@ export const contributionSteps = [
   },
 ];
 
-export const aboutMilestones = [
-  {
-    year: '2022',
-    title: 'Inisiasi Riset Awal',
-    desc: 'Mulai mengumpulkan dokumen sejarah tertulis bersama komunitas sejarawan Padang & Medan.',
-  },
-  {
-    year: '2023',
-    title: 'Peluncuran Digital Beta',
-    desc: 'Website resmi diluncurkan dengan memetakan 3 provinsi pertama di Sumatra Bagian Utara.',
-  },
-  {
-    year: '2024',
-    title: 'Ekspansi 10 Provinsi',
-    desc: 'Berhasil melengkapi peta budaya lengkap dari Aceh hingga ujung selatan di Lampung.',
-  },
-  {
-    year: '2025',
-    title: 'Kurasi Kolaboratif Terbuka',
-    desc: 'Membuka jalur kontribusi bagi pegiat adat, akademisi, dan generasi muda se-Sumatra.',
-  },
-];
+export const aboutMilestones = [];
 
 // Deprecated: angka statis (150+, 10, 500+, 50+) dihapus demi relevansi alur kontribusi
 export const aboutStats = [];
