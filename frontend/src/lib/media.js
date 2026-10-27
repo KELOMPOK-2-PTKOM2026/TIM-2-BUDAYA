@@ -1,4 +1,4 @@
-const STORAGE_URL = process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/';
+const STORAGE_BASE = (process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/').replace(/\/+$/, '');
 
 // Ilustrasi pengganti per kategori, dipakai bila budaya belum memiliki foto asli.
 const CATEGORY_PLACEHOLDERS = {
@@ -24,7 +24,8 @@ export function resolveImageUrl(path, category) {
   // Data lama menyimpan ilustrasi dummy yang tidak selalu sesuai kategori; ganti dengan yang cocok.
   if (!path || isPlaceholder(path)) return getPlaceholder(category);
   if (path.startsWith('http') || path.startsWith('/images/')) return path;
-  return `${STORAGE_URL}${path}`;
+  const cleanPath = path.replace(/^\/?storage\//, '').replace(/^\//, '');
+  return `${STORAGE_BASE}/${cleanPath}`;
 }
 
 // Semua foto asli milik sebuah budaya (gambar utama + galeri), tanpa duplikat dan tanpa ilustrasi dummy.

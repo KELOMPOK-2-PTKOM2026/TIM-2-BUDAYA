@@ -4,7 +4,7 @@ import api from '../lib/api';
 import { heroImage } from '../data/Mock';
 import '../styles/Hero.css';
 
-const STORAGE_URL = process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/';
+const STORAGE_BASE = (process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/').replace(/\/+$/, '');
 
 const DEFAULT_SLIDES = [
   {
@@ -71,7 +71,8 @@ const Hero = () => {
     if (!imagePath || /\/images\/dummy-[a-z]+\.svg$/.test(imagePath)) return heroImage;
     if (imagePath.startsWith('http')) return imagePath;
     if (imagePath.startsWith('/images/')) return imagePath;
-    return `${STORAGE_URL}${imagePath}`;
+    const cleanPath = imagePath.replace(/^\/?storage\//, '').replace(/^\//, '');
+    return `${STORAGE_BASE}/${cleanPath}`;
   };
 
   const currentCulture = slides[currentIndex] || slides[0];

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../lib/api';
 import { compressImage } from '../lib/media';
 
-const STORAGE_URL = process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/';
+const STORAGE_BASE = (process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/').replace(/\/+$/, '');
 
 export default function EditCultureModal({
   isOpen,
@@ -79,7 +79,7 @@ export default function EditCultureModal({
     if (cultureData.image) {
       const src = cultureData.image.startsWith('http')
         ? cultureData.image
-        : `${STORAGE_URL}${cultureData.image.replace(/^\/?storage\//, '')}`;
+        : `${STORAGE_BASE}/${cultureData.image.replace(/^\/?storage\//, '').replace(/^\//, '')}`;
       setImagePreview(src);
     } else {
       setImagePreview(null);
@@ -197,7 +197,7 @@ export default function EditCultureModal({
     if (!path) return '';
     return path.startsWith('http')
       ? path
-      : `${STORAGE_URL}${path.replace(/^\/?storage\//, '')}`;
+      : `${STORAGE_BASE}/${path.replace(/^\/?storage\//, '').replace(/^\//, '')}`;
   };
 
   return (

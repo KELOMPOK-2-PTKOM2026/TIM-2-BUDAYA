@@ -5,7 +5,7 @@ import AlertModal from '../components/AlertModal';
 import EditCultureModal from '../components/EditCultureModal';
 import '../styles/AdminPage.css';
 
-const STORAGE_URL = process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/';
+const STORAGE_BASE = (process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/').replace(/\/+$/, '');
 
 const statusLabels = {
   pending: 'Menunggu',
@@ -64,7 +64,8 @@ export default function AdminPage() {
     if (!imagePath) return '/images/dummy-budaya.svg';
     if (imagePath.startsWith('http')) return imagePath;
     if (imagePath.startsWith('/images/')) return imagePath;
-    return `${STORAGE_URL}${imagePath}`;
+    const cleanPath = imagePath.replace(/^\/?storage\//, '').replace(/^\//, '');
+    return `${STORAGE_BASE}/${cleanPath}`;
   };
 
   // ================= FETCH PROPOSALS =================
