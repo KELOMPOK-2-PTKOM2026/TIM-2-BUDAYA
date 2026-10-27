@@ -29,6 +29,7 @@
 /storage/logs/*.log
 /storage/pail
 *.sqlite
+*.sqlite3
 *.sqlite-journal
 *.sqlite-shm
 *.sqlite-wal

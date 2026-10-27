@@ -8,8 +8,11 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Password as PasswordBroker;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -20,7 +23,12 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|max:255',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => [
+                'required',
+                'string',
+                'confirmed',
+                Password::min(8)->letters()->mixedCase()->numbers(),
+            ],
         ]);
 
         $existingUser = User::where('email', $validated['email'])->first();
@@ -54,7 +62,7 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'message'               => 'Registrasi berhasil. Tautan verifikasi telah dikirim ke email Anda. Silakan periksa kotak masuk atau spam.',
+            'message'               => 'Registrasi berhasil. Silakan cek email Anda untuk tautan verifikasi sebelum login.',
             'requires_verification' => true,
         ], 201);
     }
@@ -66,9 +74,21 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
+        $throttleKey = Str::transliterate(Str::lower($request->input('email')) . '|' . $request->ip());
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+
+            return response()->json([
+                'message' => "Terlalu banyak percobaan. Silakan coba lagi dalam {$seconds} detik.",
+            ], 429);
+        }
+
         $user = User::where('email', $request->email)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
+            RateLimiter::hit($throttleKey);
+
             throw ValidationException::withMessages([
                 'email' => ['Kredensial tidak valid.'],
             ]);
@@ -79,6 +99,8 @@ class AuthController extends Controller
                 'email' => ['Email belum diverifikasi. Silakan periksa kotak masuk atau folder spam email Anda untuk mengaktifkan akun.'],
             ]);
         }
+
+        RateLimiter::clear($throttleKey);
 
         $user->tokens()->delete();
 
@@ -139,9 +161,9 @@ class AuthController extends Controller
     {
         $request->validate(['email' => 'required|email']);
 
-        $status = Password::sendResetLink($request->only('email'));
+        $status = PasswordBroker::sendResetLink($request->only('email'));
 
-        if ($status === Password::RESET_LINK_SENT) {
+        if ($status === PasswordBroker::RESET_LINK_SENT) {
             return response()->json(['message' => __($status)]);
         }
 
@@ -158,7 +180,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $status = Password::reset(
+        $status = PasswordBroker::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (User $user, string $password) {
                 $user->forceFill([
@@ -167,7 +189,7 @@ class AuthController extends Controller
             }
         );
 
-        if ($status === Password::PASSWORD_RESET) {
+        if ($status === PasswordBroker::PASSWORD_RESET) {
             return response()->json(['message' => __($status)]);
         }
 

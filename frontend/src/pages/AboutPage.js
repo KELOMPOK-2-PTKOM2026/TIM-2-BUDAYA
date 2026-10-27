@@ -3,6 +3,7 @@ import { AuthContext } from '../context/AuthContext';
 import { aboutMilestones } from '../data/Mock';
 import AccessLevels from '../components/AccessLevels';
 import { getAccessLevel } from '../lib/roles';
+import StatBanner from '../components/StatBanner';
 import '../styles/AboutPage.css';
 
 export default function AboutPage() {
@@ -108,6 +109,9 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* ================= CARA BERKONTRIBUSI ================= */}
+      <StatBanner />
     </div>
   );
 }

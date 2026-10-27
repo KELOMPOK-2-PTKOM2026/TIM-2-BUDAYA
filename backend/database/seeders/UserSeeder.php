@@ -10,7 +10,7 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::firstOrCreate(
+        User::updateOrCreate(
             ['email' => 'admin@jelajahsumatera.id'],
             [
                 'name'              => 'Admin Jelajah',
@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
             ]
         );
 
-        User::firstOrCreate(
+        User::updateOrCreate(
             ['email' => 'user@jelajahsumatera.id'],
             [
                 'name'              => 'User Demo',

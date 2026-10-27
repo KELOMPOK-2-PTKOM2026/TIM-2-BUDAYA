@@ -6,6 +6,7 @@ import { resolveImageUrl, handleImageError } from '../lib/media';
 // Hapus `editorialPicks` dari Mock, tetap gunakan variabel mock untuk aset statis jika ada.
 import { provinces, features, songketPattern } from '../data/Mock';
 import Hero from '../components/Hero'; // Komponen Carousel Hero
+import StatBanner from '../components/StatBanner'; // Banner Cara Berkontribusi (4 Langkah)
 import '../styles/LandingPage.css';
 
 // Custom icons matching the 3 feature cards in the screenshot
@@ -61,6 +62,9 @@ export default function LandingPage() {
     <div className="landing-page">
       {/* ================= HERO CAROUSEL SECTION ================= */}
       <Hero />
+
+      {/* ================= CARA BERKONTRIBUSI (4 LANGKAH) ================= */}
+      <StatBanner />
 
       {/* ================= 3 VALUE CARDS ================= */}
       <section className="value-props">

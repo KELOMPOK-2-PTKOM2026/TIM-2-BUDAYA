@@ -14,11 +14,11 @@
 }
 
 [data-theme="dark"] {
-  --bg-main: #121614;
-  --bg-surface: #1c2320;
-  --text-primary: #f0f4f1;
-  --text-secondary: #a2ada6;
+  --bg-main: #161a18;
+  --bg-surface: #202724;
+  --text-primary: #e2e8f0;
   --border-color: #2d3832;
+  --text-secondary: #a2ada6;
   --input-bg: #242d28;
   --heading-color: #d4af37; /* Aksen emas */
 }
@@ -69,6 +69,12 @@ body {
   background-size: 280px auto;
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme="dark"] body {
+  background-color: var(--bg-main);
+  background-image: linear-gradient(var(--bg-main), var(--bg-main)), url('./images/auth-pattern-bg.jpg');
+  background-blend-mode: multiply;
 }
 
 /* Opsi B: Filter untuk elemen motif batik dengan class terpisah */

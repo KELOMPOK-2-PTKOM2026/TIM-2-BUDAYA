@@ -41,7 +41,7 @@ const ExplorePage = () => {
           <Search className="search-icon" style={{ width: 16, height: 16 }} />
           <input
             type="text"
-            placeholder="Cari warisan budaya, misal: Tari Saman, Rendang..."
+            placeholder="Cari warisan budaya, misal: Rumah Gadang, Pempek..."
             value={query}
             onChange={(e) => { setQuery(e.target.value); setPage(1); }}
             className="search-input"

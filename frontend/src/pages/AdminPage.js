@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import api from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import AlertModal from '../components/AlertModal';
+import EditCultureModal from '../components/EditCultureModal';
 import '../styles/AdminPage.css';
 
 const STORAGE_URL = process.env.REACT_APP_STORAGE_URL || 'http://localhost:8000/storage/';
@@ -15,6 +16,10 @@ const statusLabels = {
 export default function AdminPage() {
   const { token } = useAuth();
   const [activeTab, setActiveTab] = useState('proposals'); // 'proposals' | 'cultures'
+
+  // Master data pilihan
+  const [provinces, setProvinces] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   // ================= TAB 1: USULAN / PROPOSALS STATE =================
   const [status, setStatus] = useState('pending');
@@ -44,10 +49,6 @@ export default function AdminPage() {
   const [editModal, setEditModal] = useState({
     isOpen: false,
     culture: null,
-    title: '',
-    image: '',
-    desc: '',
-    featured: false,
   });
 
   // Alert feedback modal
@@ -101,6 +102,16 @@ export default function AdminPage() {
     } finally {
       setCultureLoading(false);
     }
+  }, []);
+
+  // Fetch master data provinsi & kategori untuk edit modal
+  useEffect(() => {
+    Promise.all([api.get('/provinces'), api.get('/categories')])
+      .then(([provRes, catRes]) => {
+        setProvinces(provRes.data.data || provRes.data || []);
+        setCategories(catRes.data.data || catRes.data || []);
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -239,58 +250,22 @@ export default function AdminPage() {
     setEditModal({
       isOpen: true,
       culture,
-      title: culture.title,
-      image: culture.image || '',
-      desc: culture.desc || '',
-      featured: Boolean(culture.featured),
     });
   };
 
   const closeEditModal = () => {
-    if (activeCultureId) return;
-    setEditModal((prev) => ({ ...prev, isOpen: false }));
+    setEditModal({ isOpen: false, culture: null });
   };
 
-  const handleSaveEdit = async (e) => {
-    e.preventDefault();
-    if (!editModal.culture) return;
-
-    setActiveCultureId(editModal.culture.id);
-
-    try {
-      const payload = {
-        title: editModal.title,
-        image: editModal.image,
-        desc: editModal.desc,
-        featured: editModal.featured,
-      };
-
-      await api.patch(`/admin/cultures/${editModal.culture.id}`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setEditModal((prev) => ({ ...prev, isOpen: false }));
-      setAlertConfig({
-        isOpen: true,
-        type: 'success',
-        eyebrow: 'Katalog Budaya',
-        title: 'Perubahan Disimpan',
-        message: `Data budaya "${editModal.title}" berhasil diperbarui.`,
-      });
-
-      await loadCultures(culturePagination?.current_page || 1, cultureSearch);
-    } catch (requestError) {
-      const errorMsg = requestError.response?.data?.message || 'Gagal memperbarui budaya.';
-      setAlertConfig({
-        isOpen: true,
-        type: 'error',
-        eyebrow: 'Gagal Memperbarui',
-        title: 'Operasi Gagal',
-        message: errorMsg,
-      });
-    } finally {
-      setActiveCultureId(null);
-    }
+  const handleEditSuccess = (cultureTitle) => {
+    setAlertConfig({
+      isOpen: true,
+      type: 'success',
+      eyebrow: 'Katalog Budaya',
+      title: 'Perubahan Disimpan',
+      message: `Data budaya "${cultureTitle || 'terkait'}" berhasil diperbarui.`,
+    });
+    loadCultures(culturePagination?.current_page || 1, cultureSearch);
   };
 
   return (
@@ -857,141 +832,14 @@ export default function AdminPage() {
       )}
 
       {/* ================= MODAL EDIT BUDAYA & HERO ================= */}
-      {editModal.isOpen && editModal.culture && (
-        <div
-          className="admin-modal-overlay"
-          onClick={closeEditModal}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="admin-edit-modal-title"
-        >
-          <div
-            className="admin-modal-card admin-modal-card--edit"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              className="admin-modal-close"
-              onClick={closeEditModal}
-              disabled={Boolean(activeCultureId)}
-              aria-label="Tutup dialog"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-
-            <div className="admin-modal-header">
-              <div className="admin-modal-icon-badge admin-modal-icon-badge--edit">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 20h9" />
-                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                </svg>
-              </div>
-              <span className="admin-modal-eyebrow">Manajemen Katalog</span>
-              <h2 id="admin-edit-modal-title" className="admin-modal-title">
-                Edit Budaya & Hero
-              </h2>
-            </div>
-
-            <form onSubmit={handleSaveEdit} className="admin-modal-form">
-              <div className="admin-modal-field">
-                <label htmlFor="edit-title" className="admin-modal-label">
-                  Judul Budaya
-                </label>
-                <input
-                  id="edit-title"
-                  type="text"
-                  className="admin-modal-input"
-                  value={editModal.title}
-                  onChange={(e) => setEditModal((prev) => ({ ...prev, title: e.target.value }))}
-                  required
-                />
-              </div>
-
-              <div className="admin-modal-field">
-                <label htmlFor="edit-image" className="admin-modal-label">
-                  URL / Path Gambar (Hero Background)
-                </label>
-                <input
-                  id="edit-image"
-                  type="text"
-                  className="admin-modal-input"
-                  value={editModal.image}
-                  onChange={(e) => setEditModal((prev) => ({ ...prev, image: e.target.value }))}
-                  placeholder="Contoh: /images/tari-saman.jpg atau https://..."
-                />
-                {editModal.image && (
-                  <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <img
-                      src={getImageUrl(editModal.image)}
-                      alt="Preview"
-                      style={{ width: '80px', height: '50px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--border-color)' }}
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                    <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Pratinjau Gambar</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="admin-modal-field">
-                <label htmlFor="edit-desc" className="admin-modal-label">
-                  Deskripsi Singkat
-                </label>
-                <textarea
-                  id="edit-desc"
-                  className="admin-modal-textarea"
-                  rows={3}
-                  value={editModal.desc}
-                  onChange={(e) => setEditModal((prev) => ({ ...prev, desc: e.target.value }))}
-                  placeholder="Ringkasan budaya yang tampil di Hero..."
-                />
-              </div>
-
-              <div className="admin-modal-field">
-                <label className="admin-modal-checkbox-row">
-                  <input
-                    type="checkbox"
-                    checked={editModal.featured}
-                    onChange={(e) => setEditModal((prev) => ({ ...prev, featured: e.target.checked }))}
-                  />
-                  <span className="admin-modal-label" style={{ margin: 0, cursor: 'pointer' }}>
-                    Tampilkan di Carousel Hero ("Budaya Unggulan")
-                  </span>
-                </label>
-              </div>
-
-              <div className="admin-modal-actions">
-                <button
-                  type="button"
-                  className="admin-modal-btn admin-modal-btn--secondary"
-                  onClick={closeEditModal}
-                  disabled={Boolean(activeCultureId)}
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  className="admin-modal-btn admin-modal-btn--edit"
-                  disabled={Boolean(activeCultureId)}
-                >
-                  {activeCultureId === editModal.culture.id ? (
-                    <span className="admin-modal-btn__loading">
-                      <span className="admin-modal-spinner" />
-                      Menyimpan...
-                    </span>
-                  ) : (
-                    'Simpan Perubahan'
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <EditCultureModal
+        isOpen={editModal.isOpen}
+        onClose={closeEditModal}
+        cultureData={editModal.culture}
+        provinces={provinces}
+        categories={categories}
+        onSuccess={handleEditSuccess}
+      />
 
       {/* Alert Modal untuk Feedback Sukses / Error */}
       <AlertModal

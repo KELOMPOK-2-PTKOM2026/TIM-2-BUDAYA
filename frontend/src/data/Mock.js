@@ -42,13 +42,13 @@ export const categories = [
 
 export const editorialPicks = [
   {
-    id: 'saman',
-    slug: 'tari-saman',
-    title: 'Tari Saman Gayo',
-    province: 'Aceh',
-    category: 'Seni Pertunjukan',
-    image: '/images/tari-saman.jpg',
-    desc: 'Tarian unik berkecepatan tinggi yang mengekspresikan nilai spiritualitas, harmoni kolektif, dan kedisiplinan murni.',
+    id: 'siger',
+    slug: 'siger-lampung',
+    title: 'Siger Lampung',
+    province: 'Lampung',
+    category: 'Pakaian Adat',
+    image: '/images/siger-lampung.jpg',
+    desc: 'Mahkota pengantin wanita emas megah berlambang kehormatan, feminitas, dan status sosial.',
   },
   {
     id: 'songket',
@@ -74,17 +74,6 @@ export const cultures = [
   // =========================================================================
   // PAGE 1 DEFAULT ITEMS (Preserving exact 6 cards from design screenshot)
   // =========================================================================
-  {
-    id: 1,
-    slug: 'tari-saman',
-    title: 'Tari Saman Gayo',
-    province: 'Aceh',
-    region: 'Nanggroe Aceh Darussalam',
-    category: 'Seni Pertunjukan',
-    image: '/images/tari-saman.jpg',
-    desc: 'Seni tari dinamis dengan tepukan dada berkecepatan tinggi yang merefleksikan persatuan gayo.',
-    featured: true,
-  },
   {
     id: 11,
     slug: 'tari-seudati',
@@ -117,17 +106,6 @@ export const cultures = [
     image: '/images/rapai.jpg',
     desc: 'Alat musik perkusi pengiring lantunan syair adat.',
     featured: false,
-  },
-
-  {
-    id: 2,
-    slug: 'rendang-minang',
-    title: 'Rendang Minang',
-    province: 'Sumatera Barat',
-    category: 'Kuliner',
-    image: '/images/rendang-minang.jpg',
-    desc: 'Olahan daging sapi legendaris Minangkabau dengan rempah berlapis yang dimasak perlahan.',
-    featured: true,
   },
   {
     id: 3,
@@ -755,7 +733,7 @@ export const destinations = [
 export const articles = [
   { id: 1, title: 'Memahami Filosofi Bagonjong Rumah Gadang', excerpt: 'Atap rumah gadang bukan sekadar bentuk arsitektur, tetapi juga simbol kehidupan dan nilai luhur Minangkabau.', image: 'https://images.unsplash.com/photo-1606633007433-a1abd835f6cd?crop=entropy&cs=srgb&fm=jpg&q=85&w=800', date: '12 Mar 2025', author: 'Dr. Rangkayo' },
   { id: 2, title: 'Perjalanan Sejarah Songket Palembang', excerpt: 'Dari masa Kerajaan Sriwijaya hingga pengakuan UNESCO, songket menyimpan jejak panjang peradaban Nusantara.', image: 'https://images.unsplash.com/photo-1571669829691-9bfdc2943044?crop=entropy&cs=srgb&fm=jpg&q=85&w=800', date: '08 Mar 2025', author: 'Siti Rahayu' },
-  { id: 3, title: 'Tari Saman: Harmoni dalam Gerakan', excerpt: 'Pelajari bagaimana ratusan penari Saman menciptakan harmoni sempurna tanpa iringan musik.', image: '/images/tari-saman.jpg', date: '01 Mar 2025', author: 'Teuku Hasan' },
+  { id: 3, title: 'Makna Sakral di Balik Sehelai Kain Ulos', excerpt: 'Menelusuri filosofi dan restu leluhur yang ditenun dalam setiap helai kain kebanggaan suku Batak.', image: '/images/kain-ulos.jpg', date: '01 Mar 2025', author: 'Poltak Silalahi' },
 ];
 
 export const testimonials = [
@@ -768,7 +746,7 @@ export const testimonials = [
   {
     id: 2,
     name: 'Cut Nyak Meutia',
-    role: 'Koreografer & Budayawan Gayo',
+    role: 'Koreografer & Budayawan Melayu',
     text: '“Sebagai pegiat budaya, saya sangat terbantu dapat mengarsipkan tari dan cerita daerah kami yang hampir punah ke platform terpercaya ini.”',
   },
 ];
@@ -777,70 +755,79 @@ export const heroImage = '/images/hero-sumatra.jpg';
 export const songketPattern = '/images/songket-pattern.jpg';
 
 export const detailCulture = {
-  slug: 'tari-saman',
-  title: 'Tari Saman Gayo',
-  province: 'Aceh',
-  region: 'Nanggroe Aceh Darussalam',
-  category: 'Seni Pertunjukan',
-  heroImage: '/images/tari-saman.jpg',
+  slug: 'siger-lampung',
+  title: 'Siger Lampung',
+  province: 'Lampung',
+  region: 'Lampung',
+  category: 'Pakaian Adat',
+  heroImage: '/images/siger-lampung.jpg',
   description:
-    'Tari Saman adalah salah satu tarian adat yang berasal dari dataran tinggi Gayo, Aceh. Tarian ini awalnya dibawakan oleh masyarakat suku Gayo untuk merayakan peristiwa-peristiwa penting dalam adat. Syair-syair dalam Tari Saman menggunakan bahasa Gayo yang dipadukan dengan pesan spiritualitas keislaman, pujian, serta nasihat persaudaraan.',
+    'Siger adalah mahkota adat pengantin wanita Lampung yang berbentuk segitiga bertingkat dengan lekukan khas menyerupai perahu.',
   longDescription:
-    'Keunikan utama tari ini adalah absennya alat musik eksternal; ritme sepenuhnya diatur oleh kombinasi tepukan tangan, tepukan dada, dan senandung para penari yang bergerak serentak secara akrobatik dan harmonis. Saman telah resmi diakui oleh UNESCO sebagai Warisan Budaya Takbenda yang membutuhkan perlindungan mendesak sejak tahun 2011.',
+    'Mahkota ini melambangkan kehormatan, keagungan, dan status sosial wanita dalam adat Lampung. Setiap lekukan pada pucuk Siger memiliki filosofi mendalam yang mengakar pada garis keturunan dan nilai kepemimpinan adat Saibatin dan Pepadun.',
   gallery: [
-    { src: '/images/saman-galeri-1.jpg', alt: 'Tepukan Tangan Tari Saman' },
-    { src: '/images/saman-galeri-2.jpg', alt: 'Pementasan Massal Tari Saman' },
-    { src: '/images/saman-galeri-3.jpg', alt: 'Potret Tradisi Budaya' },
-    { src: '/images/saman-galeri-4.jpg', alt: 'Dokumentasi Sejarah Tari Tradisional' },
+    { src: '/images/siger-lampung.jpg', alt: 'Mahkota Siger Lampung' },
+    { src: '/images/songket-silungkang.jpg', alt: 'Detail Ornamen Adat' },
   ],
   heritage: [
     {
-      id: 'seudati',
-      slug: 'tari-seudati',
-      title: 'Tari Seudati',
-      province: 'Aceh',
-      category: 'Tarian',
-      image: '/images/tari-seudati.jpg',
-      desc: 'Tarian kepahlawanan energik khas aceh pesisir.',
+      id: 'songket',
+      slug: 'songket-silungkang',
+      title: 'Songket Silungkang',
+      province: 'Sumatera Barat',
+      category: 'Kerajinan Kriya',
+      image: '/images/songket-silungkang.jpg',
+      desc: 'Tenun tradisional mewah Minangkabau bertabur benang emas.',
     },
     {
-      id: 'kopi-gayo',
-      slug: 'kopi-gayo',
-      title: 'Kopi Gayo',
-      province: 'Aceh',
-      category: 'Kuliner',
-      image: '/images/kopi-gayo.jpg',
-      desc: 'Kopi arabika legendaris dataran tinggi gayo.',
-    },
-    {
-      id: 'rapai',
-      slug: 'rapai',
-      title: 'Rapai',
-      province: 'Aceh',
-      category: 'Musik',
-      image: '/images/rapai.jpg',
-      desc: 'Alat musik perkusi pengiring lantunan syair adat.',
+      id: 'kain-ulos',
+      slug: 'kain-ulos-batak',
+      title: 'Kain Ulos Batak',
+      province: 'Sumatera Utara',
+      category: 'Kerajinan Kriya',
+      image: '/images/kain-ulos.jpg',
+      desc: 'Kain tenun sakral pembawa restu dalam tradisi Batak.',
     },
   ],
   facts: [
     {
-      title: 'Diakui UNESCO',
-      desc: 'Terdaftar sejak 2011 sebagai Warisan Budaya Takbenda Dunia',
+      title: 'Lambang Kehormatan',
+      desc: 'Simbol mahkota kehormatan dan feminitas pengantin wanita Lampung.',
     },
     {
-      title: 'Tanpa Alat Musik',
-      desc: 'Ritme murni bersumber dari koordinasi tepuk dada, tangan, dan vokal penari',
-    },
-    {
-      title: 'Jumlah Ganjil',
-      desc: "Dipimpin oleh seorang 'Syekh' di tengah barisan ganjil yang mengarahkan gerakan",
-    },
-    {
-      title: 'Pesan Dakwah',
-      desc: 'Awalnya berfungsi sebagai medium dakwah syiar Islam di wilayah pegunungan Gayo.',
+      title: 'Sembilan Pucuk',
+      desc: 'Memiliki lekukan sembilan atau tujuh pucuk sesuai tradisi adat setempat.',
     },
   ],
 };
+
+// Alur 4 langkah berkontribusi menggantikan angka statistik statis
+export const contributionSteps = [
+  {
+    step: '01',
+    icon: 'User',
+    title: 'Buat Akun',
+    desc: 'Daftar sebagai kontributor budaya.',
+  },
+  {
+    step: '02',
+    icon: 'Document',
+    title: 'Tulis Usulan',
+    desc: 'Isi detail budaya, kategori, dan unggah foto/dokumen pendukung.',
+  },
+  {
+    step: '03',
+    icon: 'Check',
+    title: 'Proses Kurasi',
+    desc: 'Tim kurator memverifikasi keaslian dan kelayakan data.',
+  },
+  {
+    step: '04',
+    icon: 'Globe',
+    title: 'Publikasi',
+    desc: 'Budaya tayang di Jelajah Sumatera dan dapat diakses publik.',
+  },
+];
 
 export const aboutMilestones = [
   {
@@ -858,6 +845,15 @@ export const aboutMilestones = [
     title: 'Ekspansi 10 Provinsi',
     desc: 'Berhasil melengkapi peta budaya lengkap dari Aceh hingga ujung selatan di Lampung.',
   },
+  {
+    year: '2025',
+    title: 'Kurasi Kolaboratif Terbuka',
+    desc: 'Membuka jalur kontribusi bagi pegiat adat, akademisi, dan generasi muda se-Sumatra.',
+  },
 ];
+
+// Deprecated: angka statis (150+, 10, 500+, 50+) dihapus demi relevansi alur kontribusi
+export const aboutStats = [];
+
 
 

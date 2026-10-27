@@ -240,4 +240,45 @@ class PhaseTwoApiTest extends TestCase
         $res->assertStatus(422)
             ->assertJsonValidationErrors(['email']);
     }
+
+    public function test_registration_requires_strong_password(): void
+    {
+        // Missing mixed case & numbers
+        $res = $this->postJson('/api/register', [
+            'name'                  => 'Weak Password User',
+            'email'                 => 'weak@example.com',
+            'password'              => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $res->assertStatus(422)
+            ->assertJsonValidationErrors(['password']);
+    }
+
+    public function test_login_rate_limiting_triggers_after_five_failed_attempts(): void
+    {
+        $user = User::factory()->create([
+            'email'             => 'rate.limit@example.com',
+            'password'          => bcrypt('CorrectPass123'),
+            'email_verified_at' => now(),
+        ]);
+
+        for ($i = 0; $i < 5; $i++) {
+            $res = $this->postJson('/api/login', [
+                'email'    => 'rate.limit@example.com',
+                'password' => 'WrongPass123',
+            ]);
+            $res->assertStatus(422);
+        }
+
+        // 6th attempt should return 429
+        $throttledRes = $this->postJson('/api/login', [
+            'email'    => 'rate.limit@example.com',
+            'password' => 'WrongPass123',
+        ]);
+
+        $throttledRes->assertStatus(429)
+            ->assertJsonStructure(['message']);
+        $this->assertStringContainsString('Terlalu banyak percobaan', $throttledRes->json('message'));
+    }
 }

@@ -3,6 +3,9 @@
 # ==============================
 .idea/
 .vscode/
+.cursor/
+.zed/
+.fleet/
 *.suo
 *.ntvs*
 *.njsproj
@@ -30,6 +33,7 @@ desktop.ini
 # Databases (SQLite & Dumps)
 # ==============================
 *.sqlite
+*.sqlite3
 *.sqlite-journal
 *.sqlite-shm
 *.sqlite-wal

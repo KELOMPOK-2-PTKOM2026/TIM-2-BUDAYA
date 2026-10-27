@@ -1,6 +1,5 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
 import AlertModal from '../components/AlertModal';
 import api from '../lib/api';
 import { getApiErrorMessage, getFieldErrors } from '../lib/errors';
@@ -65,7 +64,6 @@ const FieldError = ({ id, message }) =>
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -136,7 +134,6 @@ export default function RegisterPage() {
     `auth-input ${extra} ${fieldErrors[field] ? 'auth-input--invalid' : ''}`.trim();
 
   const passwordStrength = getPasswordStrength(formData.password);
-
   const handleResendVerification = async () => {
     if (resendCooldown > 0 || resendLoading) return;
     setResendLoading(true);
@@ -176,6 +173,11 @@ export default function RegisterPage() {
   const handleResetToRegister = () => {
     setIsRegistered(false);
     setResendStatus(null);
+    setFormData((prev) => ({
+      ...prev,
+      password: '',
+      confirmPassword: '',
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -188,24 +190,17 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      const { data } = await api.post('/register', {
+      await api.post('/register', {
         name: formData.name.trim(),
         email: formData.email.trim(),
         password: formData.password,
         password_confirmation: formData.confirmPassword,
       });
 
-      if (data.token) {
-        login(data.user, data.token);
-        setTimeout(() => {
-          navigate('/');
-        }, 1500);
-      } else {
-        setRegisteredEmail(formData.email.trim());
-        setIsRegistered(true);
-        setResendCooldown(60);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      setRegisteredEmail(formData.email.trim());
+      setIsRegistered(true);
+      setResendCooldown(60);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       const serverErrors = getFieldErrors(error);
 
@@ -489,6 +484,9 @@ export default function RegisterPage() {
                     Kekuatan Password: {passwordStrength.label}
                   </span>
                 ) : null}
+                <small style={{ fontSize: '0.78rem', color: '#64748b', display: 'block', marginTop: '0.35rem' }}>
+                  Minimal 8 karakter, kombinasi huruf besar, huruf kecil, dan angka.
+                </small>
               </div>
 
               {/* Konfirmasi Password */}

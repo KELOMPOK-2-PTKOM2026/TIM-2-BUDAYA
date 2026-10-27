@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import AlertModal from '../components/AlertModal';
 import api from '../lib/api';
@@ -34,6 +34,7 @@ const ErrorIcon = () => (
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const message = location.state?.successMessage;
   const { login } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -225,7 +226,6 @@ export default function LoginPage() {
         setFormError(getApiErrorMessage(error, 'Login gagal. Silakan coba lagi.'));
       }
     } finally {
-      setLoading(false);
     }
   };
 
@@ -253,6 +253,12 @@ export default function LoginPage() {
         {submitted && (
           <div className="auth-success-alert">
             Berhasil masuk! Mengalihkan Anda...
+          </div>
+        )}
+
+        {message && !submitted && (
+          <div className="auth-success-alert">
+            {message}
           </div>
         )}
 

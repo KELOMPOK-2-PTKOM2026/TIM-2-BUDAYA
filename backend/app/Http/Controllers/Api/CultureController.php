@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Culture;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CultureController extends Controller
 {
@@ -76,18 +78,70 @@ class CultureController extends Controller
         $culture = Culture::findOrFail($id);
 
         $validated = $request->validate([
-            'province_id' => 'sometimes|exists:provinces,id',
-            'category_id' => 'sometimes|exists:categories,id',
-            'title'       => 'sometimes|string|max:255',
-            'image'       => 'nullable|string',
-            'desc'        => 'sometimes|string',
-            'featured'    => 'sometimes|boolean',
-            'status'      => 'sometimes|in:draft,published,archived',
-            'source'      => 'nullable|string',
-            'history'     => 'nullable|string',
-            'facts'       => 'nullable|array',
-            'images'      => 'nullable|array',
+            'province_id'      => 'sometimes|exists:provinces,id',
+            'category_id'      => 'sometimes|exists:categories,id',
+            'title'            => 'sometimes|string|max:255',
+            'image'            => [
+                'nullable',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->hasFile('image')) {
+                        $validator = \Illuminate\Support\Facades\Validator::make(
+                            ['image' => $value],
+                            ['image' => 'image|mimes:jpeg,png,jpg,webp|max:2048']
+                        );
+                        if ($validator->fails()) {
+                            $fail($validator->errors()->first('image'));
+                        }
+                    } elseif (! is_string($value)) {
+                        $fail('The ' . $attribute . ' must be an image file or string path.');
+                    }
+                },
+            ],
+            'desc'             => 'sometimes|string',
+            'featured'         => 'sometimes|boolean',
+            'status'           => 'sometimes|in:published,draft,archived',
+            'source'           => 'nullable|string',
+            'history'          => 'nullable|string',
+            'facts'            => 'nullable|string', // JSON string dari frontend
+            'images_gallery'   => 'nullable|array',
+            'images_gallery.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
+
+        // Upload gambar utama
+        if ($request->hasFile('image')) {
+            if ($culture->image && Str::startsWith($culture->image, '/storage/cultures/')) {
+                $oldPath = str_replace('/storage/', '', $culture->image);
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+            }
+            $file = $request->file('image');
+            $slug = Str::slug($request->input('title', $culture->title)) ?: 'culture';
+            $filename = $slug . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('cultures', $filename, 'public');
+            $validated['image'] = '/storage/cultures/' . $filename;
+        } elseif (! $request->has('image')) {
+            unset($validated['image']);
+        }
+
+        // Multi-upload galeri gambar
+        if ($request->hasFile('images_gallery')) {
+            $galleryPaths = [];
+            foreach ($request->file('images_gallery') as $galleryFile) {
+                $slug = Str::slug($request->input('title', $culture->title)) ?: 'culture';
+                $filename = $slug . '-gallery-' . time() . '-' . uniqid() . '.' . $galleryFile->getClientOriginalExtension();
+                $galleryFile->storeAs('cultures', $filename, 'public');
+                $galleryPaths[] = '/storage/cultures/' . $filename;
+            }
+            $validated['images'] = json_encode($galleryPaths);
+        }
+        unset($validated['images_gallery']);
+
+        // Decode/re-encode facts JSON string
+        if (isset($validated['facts'])) {
+            $decoded = json_decode($validated['facts'], true);
+            $validated['facts'] = is_array($decoded) ? json_encode($decoded) : null;
+        }
 
         $validated['updated_by'] = auth()->id();
 
