@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import AlertModal from '../components/AlertModal';
@@ -14,6 +15,7 @@ const statusLabels = {
 };
 
 export default function AdminPage() {
+  const navigate = useNavigate();
   const { token } = useAuth();
   const [activeTab, setActiveTab] = useState('proposals'); // 'proposals' | 'cultures'
 
@@ -44,6 +46,12 @@ export default function AdminPage() {
   const [cultureLoading, setCultureLoading] = useState(false);
   const [cultureSearch, setCultureSearch] = useState('');
   const [activeCultureId, setActiveCultureId] = useState(null);
+
+  // Dialog konfirmasi hapus budaya
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [cultureToDelete, setCultureToDelete] = useState(null);
+  const [deleteReason, setDeleteReason] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Dialog edit budaya
   const [editModal, setEditModal] = useState({
@@ -125,15 +133,20 @@ export default function AdminPage() {
 
   // Handle ESC dan kunci scroll saat modal aktif
   useEffect(() => {
-    const isAnyModalOpen = verifyModal.isOpen || editModal.isOpen;
+    const isAnyModalOpen = verifyModal.isOpen || editModal.isOpen || isDeleteModalOpen;
     if (!isAnyModalOpen) return;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && !activeId && !activeCultureId) {
+      if (e.key === 'Escape' && !activeId && !activeCultureId && !isDeleting) {
         if (verifyModal.isOpen) setVerifyModal((prev) => ({ ...prev, isOpen: false }));
         if (editModal.isOpen) setEditModal((prev) => ({ ...prev, isOpen: false }));
+        if (isDeleteModalOpen) {
+          setIsDeleteModalOpen(false);
+          setCultureToDelete(null);
+          setDeleteReason('');
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -142,7 +155,7 @@ export default function AdminPage() {
       document.body.style.overflow = prevOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [verifyModal.isOpen, editModal.isOpen, activeId, activeCultureId]);
+  }, [verifyModal.isOpen, editModal.isOpen, isDeleteModalOpen, activeId, activeCultureId, isDeleting]);
 
   // ================= PROPOSALS ACTIONS =================
   const openVerifyModal = (proposal, nextStatus) => {
@@ -247,6 +260,7 @@ export default function AdminPage() {
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const openEditModal = (culture) => {
     setEditModal({
       isOpen: true,
@@ -267,6 +281,52 @@ export default function AdminPage() {
       message: `Data budaya "${cultureTitle || 'terkait'}" berhasil diperbarui.`,
     });
     loadCultures(culturePagination?.current_page || 1, cultureSearch);
+  };
+
+  const openDeleteModal = (culture) => {
+    setCultureToDelete(culture);
+    setDeleteReason('');
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    if (isDeleting) return;
+    setIsDeleteModalOpen(false);
+    setCultureToDelete(null);
+    setDeleteReason('');
+  };
+
+  const handleDeleteSubmit = async (e) => {
+    if (e) e.preventDefault();
+    if (!cultureToDelete || deleteReason.trim().length < 5) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await api.delete(`/admin/cultures/${cultureToDelete.id}`, {
+        data: { deletion_reason: deleteReason.trim() },
+      });
+
+      setAlertConfig({
+        isOpen: true,
+        type: 'success',
+        eyebrow: 'Katalog Budaya',
+        title: 'Berhasil Dihapus',
+        message: response.data?.message || `Budaya "${cultureToDelete.title}" berhasil dihapus dari katalog (soft delete).`,
+      });
+
+      closeDeleteModal();
+      loadCultures(culturePagination?.current_page || 1, cultureSearch);
+    } catch (err) {
+      setAlertConfig({
+        isOpen: true,
+        type: 'error',
+        eyebrow: 'Gagal Menghapus',
+        title: 'Penghapusan Gagal',
+        message: err.response?.data?.message || err.response?.data?.errors?.deletion_reason?.[0] || 'Terjadi kesalahan saat menghapus budaya.',
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -618,9 +678,16 @@ export default function AdminPage() {
                               <button
                                 type="button"
                                 className="admin-button admin-button--edit"
-                                onClick={() => openEditModal(culture)}
+                                onClick={() => navigate('/admin/katalog/edit/' + culture.slug)}
                               >
                                 Edit
+                              </button>
+                              <button
+                                type="button"
+                                className="admin-button admin-button--danger"
+                                onClick={() => openDeleteModal(culture)}
+                              >
+                                Hapus
                               </button>
                             </div>
                           </td>
@@ -684,9 +751,16 @@ export default function AdminPage() {
                         <button
                           type="button"
                           className="admin-button admin-button--edit admin-button--full"
-                          onClick={() => openEditModal(culture)}
+                          onClick={() => navigate('/admin/katalog/edit/' + culture.slug)}
                         >
                           Edit Budaya
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-button admin-button--danger admin-button--full"
+                          onClick={() => openDeleteModal(culture)}
+                        >
+                          Hapus Budaya
                         </button>
                       </div>
                     </div>
@@ -841,6 +915,109 @@ export default function AdminPage() {
         categories={categories}
         onSuccess={handleEditSuccess}
       />
+
+      {/* ================= MODAL KONFIRMASI HAPUS BUDAYA ================= */}
+      {isDeleteModalOpen && cultureToDelete && (
+        <div
+          className="admin-modal-overlay"
+          onClick={closeDeleteModal}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="admin-delete-modal-title"
+        >
+          <div
+            className="admin-modal-card admin-modal-card--rejected"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="admin-modal-close"
+              onClick={closeDeleteModal}
+              disabled={isDeleting}
+              aria-label="Tutup dialog"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+
+            <div className="admin-modal-header">
+              <div className="admin-modal-icon-badge admin-modal-icon-badge--rejected">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  <line x1="10" y1="11" x2="10" y2="17" />
+                  <line x1="14" y1="11" x2="14" y2="17" />
+                </svg>
+              </div>
+              <span className="admin-modal-eyebrow">Manajemen Katalog</span>
+              <h2 id="admin-delete-modal-title" className="admin-modal-title">
+                Hapus Budaya dari Katalog
+              </h2>
+            </div>
+
+            <div className="admin-modal-target">
+              <span className="admin-modal-target__label">Target Budaya</span>
+              <p className="admin-modal-target__title">{cultureToDelete.title}</p>
+              <div className="admin-modal-target__meta">
+                <span>{cultureToDelete.category?.name || '-'}</span>
+                <span className="admin-modal-target__bullet">•</span>
+                <span>{cultureToDelete.province?.name || '-'}</span>
+              </div>
+            </div>
+
+            <form onSubmit={handleDeleteSubmit} className="admin-modal-form">
+              <div className="admin-modal-field">
+                <label htmlFor="admin-delete-reason" className="admin-modal-label">
+                  Alasan Penghapusan (Wajib, min. 5 karakter) <span style={{ color: '#e53e3e' }}>*</span>
+                </label>
+                <textarea
+                  id="admin-delete-reason"
+                  className="admin-modal-textarea"
+                  rows={3}
+                  value={deleteReason}
+                  onChange={(e) => setDeleteReason(e.target.value)}
+                  placeholder="Masukkan alasan penghapusan konten..."
+                  disabled={isDeleting}
+                  required
+                  autoFocus
+                />
+                {deleteReason.trim().length > 0 && deleteReason.trim().length < 5 && (
+                  <span style={{ fontSize: '0.78rem', color: '#e53e3e', marginTop: '0.25rem', display: 'block' }}>
+                    Alasan harus minimal 5 karakter (saat ini {deleteReason.trim().length} karakter).
+                  </span>
+                )}
+              </div>
+
+              <div className="admin-modal-actions">
+                <button
+                  type="button"
+                  className="admin-modal-btn admin-modal-btn--secondary"
+                  onClick={closeDeleteModal}
+                  disabled={isDeleting}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="admin-modal-btn admin-modal-btn--rejected"
+                  disabled={isDeleting || deleteReason.trim().length < 5}
+                >
+                  {isDeleting ? (
+                    <span className="admin-modal-btn__loading">
+                      <span className="admin-modal-spinner" />
+                      Menghapus...
+                    </span>
+                  ) : (
+                    'Hapus Sekarang'
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Alert Modal untuk Feedback Sukses / Error */}
       <AlertModal

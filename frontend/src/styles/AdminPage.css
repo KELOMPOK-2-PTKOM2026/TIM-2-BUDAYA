@@ -154,6 +154,62 @@
   background: #962f1f;
 }
 
+.admin-button--back {
+  background-color: #1c3b2e;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, background-color 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  user-select: none;
+}
+
+.admin-button--back svg {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.admin-button--back:hover:not(:disabled) {
+  background-color: #142d23;
+  color: #ffffff;
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 6px 16px rgba(28, 59, 46, 0.25);
+}
+
+.admin-button--back:hover:not(:disabled) svg {
+  transform: translateX(-3px);
+}
+
+.admin-button--back:active:not(:disabled) {
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(28, 59, 46, 0.2);
+  transition-duration: 0.1s;
+}
+
+[data-theme="dark"] .admin-button--back {
+  background-color: #234b3a;
+  border-color: #2d5e4a;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .admin-button--back:hover:not(:disabled) {
+  background-color: #1c3b2e;
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .admin-button--back:active:not(:disabled) {
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
 .admin-button--full {
   flex: 1;
   padding: 0.65rem 1rem;
@@ -650,8 +706,11 @@
 }
 
 .admin-tab--active {
-  color: #17603d;
-  border-bottom-color: #17603d;
+  color: #1b3b36;
+  background-color: rgba(27, 59, 54, 0.08);
+  border-bottom: 3px solid #1b3b36;
+  font-weight: 700;
+  border-radius: 6px 6px 0 0;
 }
 
 /* ================= CATALOG SEARCH & ACTIONS ================= */
@@ -810,6 +869,14 @@
   background-color: #1a4971;
 }
 
+.admin-button--danger {
+  background-color: #b63e2c;
+}
+
+.admin-button--danger:hover:not(:disabled) {
+  background-color: #962f1f;
+}
+
 /* ================= EDIT MODAL FORM ================= */
 .admin-modal-card--edit::before {
   background: linear-gradient(90deg, #2b6cb0, #3182ce);
@@ -871,3 +938,156 @@
     padding: 0.75rem;
   }
 }
+
+/* ================= EDIT CULTURE GALLERY ================= */
+.admin-gallery-section {
+  margin-top: 1rem;
+}
+
+.admin-gallery-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.admin-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.85rem;
+}
+
+.admin-gallery-card {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-gallery-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.admin-gallery-thumb {
+  width: 100%;
+  height: 95px;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.admin-gallery-delete-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.5rem;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  user-select: none;
+}
+
+.admin-gallery-delete-btn:hover:not(:disabled) {
+  background-color: #fca5a5;
+  color: #991b1b;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(185, 28, 28, 0.2);
+}
+
+.admin-gallery-delete-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+[data-theme="dark"] .admin-gallery-card {
+  background: var(--bg-surface);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .admin-gallery-delete-btn {
+  background-color: rgba(185, 28, 28, 0.2);
+  border-color: rgba(185, 28, 28, 0.4);
+  color: #f87171;
+}
+
+[data-theme="dark"] .admin-gallery-delete-btn:hover:not(:disabled) {
+  background-color: rgba(185, 28, 28, 0.35);
+  color: #fca5a5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ================= BANNER JUDUL EDIT BUDAYA ================= */
+.bg-\[\#1b3b36\] {
+  background-color: #1b3b36;
+  padding: 1.5rem 1.75rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] .bg-\[\#1b3b36\],
+[data-theme="dark"] .dark\:bg-\[\#122824\] {
+  background-color: #122824;
+  border: 1px solid #1c3b2e;
+}
+
+.text-teal-400\/80 {
+  color: rgba(45, 212, 191, 0.85);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 0.35rem 0;
+}
+
+.bg-\[\#1b3b36\] h2,
+.text-2xl {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.text-gray-200 {
+  color: #e5e7eb;
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0 0;
+  line-height: 1.4;
+}
+
+@media (min-width: 640px) {
+  .bg-\[\#1b3b36\] {
+    padding: 2rem;
+  }
+  .bg-\[\#1b3b36\] h2 {
+    font-size: 1.85rem;
+  }
+}
+

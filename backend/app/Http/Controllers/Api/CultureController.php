@@ -93,6 +93,7 @@ class CultureController extends Controller
             'history'          => 'nullable|string',
             'facts'            => 'sometimes|array',
             'facts.*'          => 'nullable|string',
+            'deleted_gallery_images' => 'sometimes|array',
             'images_gallery'   => 'nullable|array',
             'images_gallery.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
@@ -115,19 +116,37 @@ class CultureController extends Controller
             unset($validated['image']);
         }
 
-        // Multi-upload galeri gambar
+        // Tangkap data array galeri lama
+        $currentImages = is_array($culture->images) ? $culture->images : [];
+
+        // Hapus foto galeri lama yang dipilih
+        if ($request->has('deleted_gallery_images')) {
+            $deletedImages = (array) $request->input('deleted_gallery_images', []);
+            foreach ($deletedImages as $imagePath) {
+                $storagePath = ltrim(str_replace('/storage/', '', $imagePath), '/');
+                if (Storage::disk('public')->exists($storagePath)) {
+                    Storage::disk('public')->delete($storagePath);
+                }
+                $currentImages = array_values(array_filter($currentImages, fn ($img) => $img !== $imagePath));
+            }
+            $validated['images'] = $currentImages;
+        }
+
+        // Multi-upload galeri gambar baru & gabungkan dengan sisa gambar lama
         if ($request->hasFile('images_gallery')) {
-            $galleryPaths = [];
+            $newGalleryPaths = [];
             foreach ($request->file('images_gallery') as $galleryFile) {
                 $slug = Str::slug($request->input('title', $culture->title)) ?: 'culture';
                 $filename = $slug . '-gallery-' . time() . '-' . uniqid() . '.' . $galleryFile->getClientOriginalExtension();
                 $path = 'cultures/' . $filename;
                 Storage::disk('public')->put($path, file_get_contents($galleryFile->getRealPath()));
-                $galleryPaths[] = '/storage/' . $path;
+                $newGalleryPaths[] = '/storage/' . $path;
             }
-            $validated['images'] = $galleryPaths;
+            $currentImages = array_merge($currentImages, $newGalleryPaths);
+            $validated['images'] = $currentImages;
         }
         unset($validated['images_gallery']);
+        unset($validated['deleted_gallery_images']);
 
         // Facts array
         if (isset($validated['facts'])) {
@@ -166,6 +185,27 @@ class CultureController extends Controller
         return response()->json([
             'message' => $newFeatured ? 'Budaya berhasil dijadikan unggulan (Hero).' : 'Budaya dicabut dari status unggulan (Hero).',
             'data'    => $culture->load(['province', 'category']),
+        ]);
+    }
+
+    public function destroy(Request $request, int $id)
+    {
+        $culture = Culture::findOrFail($id);
+
+        $validated = $request->validate([
+            'deletion_reason' => 'required|string|min:5',
+        ]);
+
+        $culture->update([
+            'deleted_by'      => auth()->id(),
+            'deletion_reason' => $validated['deletion_reason'],
+        ]);
+
+        $culture->delete();
+
+        return response()->json([
+            'message' => 'Budaya berhasil dihapus (soft delete).',
+            'data'    => $culture,
         ]);
     }
 }

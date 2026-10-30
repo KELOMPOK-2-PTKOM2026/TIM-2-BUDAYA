@@ -133,4 +133,44 @@ class ProposalApiTest extends TestCase
             'updated_by' => $admin->id,
         ]);
     }
+
+    public function test_admin_can_soft_delete_culture_with_audit_trail(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $province = Province::create(['name' => 'Provinsi Hapus', 'slug' => 'provinsi-hapus']);
+        $category = Category::create(['name' => 'Kategori Hapus', 'slug' => 'kategori-hapus']);
+
+        $culture = \App\Models\Culture::create([
+            'province_id' => $province->id,
+            'category_id' => $category->id,
+            'title'       => 'Budaya Untuk Dihapus',
+            'slug'        => 'budaya-untuk-dihapus',
+            'desc'        => 'Deskripsi budaya hapus',
+            'status'      => 'published',
+        ]);
+
+        // Validation test: deletion_reason required and min 5 characters
+        $failRes = $this->actingAs($admin)->deleteJson("/api/admin/cultures/{$culture->id}", [
+            'deletion_reason' => 'bad',
+        ]);
+        $failRes->assertStatus(422);
+
+        // Success test
+        $res = $this->actingAs($admin)->deleteJson("/api/admin/cultures/{$culture->id}", [
+            'deletion_reason' => 'Konten duplikat dan sudah tidak relevan',
+        ]);
+
+        $res->assertOk();
+
+        // Verify soft delete in database
+        $this->assertSoftDeleted('cultures', [
+            'id'              => $culture->id,
+            'deleted_by'      => $admin->id,
+            'deletion_reason' => 'Konten duplikat dan sudah tidak relevan',
+        ]);
+
+        // Verify it is excluded from normal queries
+        $this->assertNull(\App\Models\Culture::find($culture->id));
+        $this->assertNotNull(\App\Models\Culture::withTrashed()->find($culture->id));
+    }
 }

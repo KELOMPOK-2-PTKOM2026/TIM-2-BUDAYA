@@ -78,7 +78,7 @@ export default function Footer() {
               <h3 className="footer__heading">SEKRETARIAT</h3>
               <ul className="footer__contact-list">
                 <li className="footer__address">
-                  Jl. Jenderal Sudirman No. 45, Padang, Sumatera Barat, Indonesia
+                  Jl. Durian Raya 1 No.10, Way Hui, Kec. Jati Agung, Kabupaten Lampung Selatan, Lampung 35365
                 </li>
                 <li>
                   <a href="mailto:kontak@jelajahsumatera.id" className="footer__email">
@@ -91,7 +91,7 @@ export default function Footer() {
 
           {/* Bottom Bar */}
           <div className="footer__bottom">
-            <span className="footer__copy">&copy; 2025 JelajahSumatera. Seluruh Hak Cipta Dilindungi.</span>
+            <span className="footer__copy">&copy; 2026 JelajahSumatera. Seluruh Hak Cipta Dilindungi.</span>
             <div className="footer__legal">
               <Link to="/eksplorasi">Kebijakan Privasi</Link>
               <span className="footer__legal-divider"></span>

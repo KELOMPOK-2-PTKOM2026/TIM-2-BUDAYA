@@ -14,6 +14,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
+import EditCulturePage from './pages/EditCulturePage';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -45,7 +46,6 @@ function App() {
               <Route path="/tentang" element={<AboutPage />} />
               {/* Tidak diproteksi: pengunjung melihat penjelasan hak akses, kontributor melihat form */}
               <Route path="/kontribusi" element={<ContributionPage />} />
-              <Route path="/kontak" element={<ContributionPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/masuk" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
@@ -66,6 +66,14 @@ function App() {
                 element={
                   <ProtectedRoute requireAdmin={true} reason="Panel admin hanya dapat diakses oleh akun Admin.">
                     <AdminPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/katalog/edit/:slug"
+                element={
+                  <ProtectedRoute requireAdmin={true} reason="Panel admin hanya dapat diakses oleh akun Admin.">
+                    <EditCulturePage />
                   </ProtectedRoute>
                 }
               />

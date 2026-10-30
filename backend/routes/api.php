@@ -43,6 +43,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
 
     Route::patch('/cultures/{id}/feature', [CultureController::class, 'feature']);
     Route::match(['put', 'patch'], '/cultures/{id}', [CultureController::class, 'update']);
+    Route::delete('/cultures/{id}', [CultureController::class, 'destroy']);
 
     Route::get('/provinces', [ProvinceController::class, 'index']);
     Route::post('/provinces', [ProvinceController::class, 'store']);
